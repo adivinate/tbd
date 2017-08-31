@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Priority: Low",
+    "color": "#009800"
+  },
+  {
+    "name": "Priority: Medium",
+    "color": "#fbca04"
+  },
+  {
+    "name": "Priority: High",
+    "color": "#eb6420"
+  },
+  {
+    "name": "Priority: Critical",
+    "color": "#e11d21"
+  },
+  {
+    "name": "Type: Bug",
+    "color": "#e11d21"
+  },
+  {
+    "name": "Type: Chore",
+    "color": "#fef2c0"
+  },
+  {
+    "name": "Type: Maintenance",
+    "color": "#fbca04"
+  },
+  {
+    "name": "Type: Enhancement",
+    "color": "#84b6eb"
+  },
+  {
+    "name": "Type: Feature Request",
+    "color": "#cc317c"
+  },
+  {
+    "name": "Type: Regression",
+    "color": "#E11D21"
+  },
+  {
+    "name": "Resolution: Duplicate",
+    "color": "#CCCCCC"
+  },
+  {
+    "name": "Resolution: Invalid",
+    "color": "#E6E6E6"
+  },
+  {
+    "name": "Resolution: Wontfix",
+    "color": "#FFFFFF"
+  },
+  {
+    "name": "Resolution: Unresolved",
+    "color": "#FEF2C0"
+  },
+  {
+    "name": "Semver: Exempt",
+    "color": ""
+  },
+  {
+    "name": "Semver: Major",
+    "color": "#B60205"
+  },
+  {
+    "name": "Semver: Minor",
+    "color": "#FBCA04"
+  },
+  {
+    "name": "Semver: Patch",
+    "color": "#0E8A16"
+  },
+  {
+    "name": "wishlist",
+    "color": "#BFE5BF"
+  },
+  {
+    "name": "release",
+    "color": "#00D8EA"
+  },
+  {
+    "name": "big picture",
+    "color": "#0052CC"
+  }
+]

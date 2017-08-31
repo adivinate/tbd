@@ -1,0 +1,48 @@
+{
+  "editor.tabSize": 2,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.formatOnSave": true,
+  "prettier.eslintIntegration": false,
+  "prettier.printWidth": 80,
+  "prettier.tabWidth": 2,
+  "prettier.singleQuote": false,
+  "prettier.trailingComma": "es5",
+  "prettier.bracketSpacing": true,
+  "prettier.jsxBracketSameLine": false,
+  "prettier.parser": "babylon",
+  "prettier.semi": true,
+  "prettier.useTabs": false,
+  "prettier.javascriptEnable": [
+    "javascript",
+    "javascriptreact"
+  ],
+  "prettier.typescriptEnable": [
+    "typescript",
+    "typescriptreact"
+  ],
+  "prettier.cssEnable": [
+    "css",
+    "less",
+    "sass"
+  ],
+  "prettier.jsonEnable": [],
+  "prettier.graphqlEnable": [
+    "graphql"
+  ],
+  "codedox": {
+    "fileheader": {
+      "params": {
+        "*": {
+          "company": "Plustwo Inc."
+        }
+      },
+      "templates": {
+        "*": [
+          "${license_gpl_3_0}"
+        ]
+      }
+    }
+  }
+}

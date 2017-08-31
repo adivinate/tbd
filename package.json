@@ -1,0 +1,40 @@
+{
+  "name": "plustwo",
+  "version": "0.1.0",
+  "private": true,
+  "license": "GPL-3.0",
+  "scripts": {
+    "lint:editor": "./node_modules/.bin/eclint check *",
+    "commit": "./node_modules/.bin/git-cz"
+  },
+  "devDependencies": {
+    "chalk": "2.1.0",
+    "commitizen": "2.9.6",
+    "cz-customizable": "5.2.0",
+    "eclint": "2.4.3",
+    "eslint": "4.5.0",
+    "eslint-config-plustwo": "3.3.0",
+    "husky": "0.14.3",
+    "inquirer": "3.2.3",
+    "inquirer-autocomplete-prompt": "0.11.1",
+    "lerna": "2.1.2",
+    "lint-staged": "4.0.4",
+    "prettier": "1.6.1",
+    "shelljs": "0.7.8",
+    "tslint": "5.7.0",
+    "tslint-config-plustwo": "2.8.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,css,js,jsx}": [
+      "npm run prettier"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./tools/commitizen/cz-plustwo-changelog"
+    }
+  },
+  "workspaces": [
+    "client/*"
+  ]
+}

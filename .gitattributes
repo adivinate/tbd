@@ -1,0 +1,107 @@
+## AUTO-DETECT - Handle line endings automatically for files detected
+## as text and leave all files detected as binary untouched.
+## This will handle all files NOT defined below.
+* text=auto
+
+## SOURCE CODE
+*.bat    text eol=crlf
+*.css    text
+*.html   text
+*.js     text
+*.jsx    text
+*.json   text
+*.ts     text
+*.tsx    text
+*.ex     text
+*.exs    text
+
+## DOCUMENTATION
+*.markdown   text
+*.md         text
+*.mdwn       text
+*.mdown      text
+*.txt        text
+CHANGELOG    text
+CHANGES      text
+CONTRIBUTING text
+COPYING      text
+INSTALL      text
+license      text
+LICENSE      text
+readme       text
+*README*     text
+TODO         text
+
+## LINTERS
+.eslintrc     text
+.stylelintrc  text
+
+## CONFIGS
+*.config       text
+.editorconfig  text
+.gitattributes text
+.gitconfig     text
+.gitignore     text
+.htaccess      text
+*.npmignore    text
+*.yaml         text
+*.yml          text
+Makefile       text
+makefile       text
+
+## GRAPHICS
+*.ai   binary
+*.bmp  binary
+*.eps  binary
+*.gif  binary
+*.ico  binary
+*.jng  binary
+*.jp2  binary
+*.jpg  binary
+*.jpeg binary
+*.jpx  binary
+*.jxr  binary
+*.pdf  binary
+*.png  binary
+*.psb  binary
+*.psd  binary
+*.svg  text
+*.svgz binary
+*.tif  binary
+*.tiff binary
+*.wbmp binary
+*.webp binary
+
+## AUDIO
+*.kar  binary
+*.m4a  binary
+*.mid  binary
+*.midi binary
+*.mp3  binary
+*.ogg  binary
+*.ra   binary
+
+## VIDEO
+*.3gpp binary
+*.3gp  binary
+*.as   binary
+*.asf  binary
+*.asx  binary
+*.fla  binary
+*.flv  binary
+*.m4v  binary
+*.mng  binary
+*.mov  binary
+*.mp4  binary
+*.mpeg binary
+*.mpg  binary
+*.swc  binary
+*.swf  binary
+*.webm binary
+
+## FONTS
+*.ttf   binary
+*.eot   binary
+*.otf   binary
+*.woff  binary
+*.woff2 binary

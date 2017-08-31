@@ -1,0 +1,8 @@
+{
+  "extends": [
+    "plustwo",
+    "plustwo/browser",
+    "plustwo/node",
+    "plustwo/react"
+  ]
+}
