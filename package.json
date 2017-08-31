@@ -35,6 +35,6 @@
     }
   },
   "workspaces": [
-    "client/*"
+    "apps/*"
   ]
 }

@@ -1,19 +1,26 @@
-defmodule Plustwo.Mixfile do
+defmodule Plustwo.Umbrella.Mixfile do
   use Mix.Project
 
   def project do
     [
-      apps_path: "server",
+      apps_path: "apps",
       start_permanent: Mix.env == :prod,
       deps: deps()
     ]
   end
 
-  # Dependencies listed here are available only for this
-  # project and cannot be accessed from applications inside
-  # the server folder.
+  # Dependencies can be Hex packages:
   #
-  # Run "mix help deps" for examples and options.
+  #   {:mydep, "~> 0.3.0"}
+  #
+  # Or git/path repositories:
+  #
+  #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
+  #
+  # Type "mix help deps" for more examples and options.
+  #
+  # Dependencies listed here are available only for this project
+  # and cannot be accessed from applications inside the apps folder
   defp deps do
     [
       {:credo, "~> 0.8.4", only: [:dev, :test], runtime: false},
