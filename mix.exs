@@ -1,13 +1,15 @@
 defmodule Plustwo.Umbrella.Mixfile do
+  @moduledoc false
+
   use Mix.Project
 
   def project do
-    [
-      apps_path: "apps",
-      start_permanent: Mix.env == :prod,
-      deps: deps()
-    ]
+    [apps_path: "apps",
+     apps: [:plustwo],
+     start_permanent: Mix.env == :prod,
+     deps: deps()]
   end
+
 
   # Dependencies can be Hex packages:
   #
@@ -22,10 +24,8 @@ defmodule Plustwo.Umbrella.Mixfile do
   # Dependencies listed here are available only for this project
   # and cannot be accessed from applications inside the apps folder
   defp deps do
-    [
-      {:credo, "~> 0.8.4", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 0.5.1", only: :dev, runtime: false},
-      {:exfmt, "~> 0.3.0", only: :dev, runtime: false},
-    ]
+    [{:credo, "~> 0.8.6", [only: [:dev, :test], runtime: false]},
+     {:dialyxir, "~> 0.5.1", [only: :dev, runtime: false]},
+     {:exfmt, [github: "lpil/exfmt", only: :dev, runtime: false]}]
   end
 end
