@@ -14,15 +14,15 @@ defmodule Plustwo do
       # Start the Application endpoint
       supervisor(Plustwo.Application.Endpoint, []),
     ]
-
     opts = [strategy: :one_for_one, name: Plustwo.Supervisor]
-    Supervisor.start_link(children, opts)
+    Supervisor.start_link children, opts
   end
+
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
   def config_change(changed, _new, removed) do
-    Plustwo.Application.Endpoint.config_change(changed, removed)
+    Plustwo.Application.Endpoint.config_change changed, removed
     :ok
   end
 end

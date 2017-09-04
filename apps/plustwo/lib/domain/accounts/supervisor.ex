@@ -15,9 +15,11 @@ defmodule Plustwo.Domain.Accounts.Supervisor do
       supervisor(Registry, [:duplicate, Plustwo.Domain.Accounts]),
       # Read model projections
       worker(Accounts.Projectors.Account, [], id: :accounts_account_projector),
+      # Workflows
+      worker(Accounts.Workflows.SendPrimaryEmailVerificationCode,
+             [],
+             id: :send_primary_email_verification_code_workflow),
     ]
-    # Workflows
-    # worker(Accounts.Workflows.SendPrimaryEmailVerificationCode, [], id: :send_primary_email_verification_code_workflow),
     supervise children, strategy: :one_for_one
   end
 end
