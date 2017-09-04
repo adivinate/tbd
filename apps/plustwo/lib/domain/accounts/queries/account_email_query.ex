@@ -26,6 +26,12 @@ defmodule Plustwo.Domain.Accounts.Queries.AccountEmailQuery do
   end
 
 
+  def by_address(email_address, email_type, opt) do
+    where = [address: email_address, type: email_type]
+    account_email_query where, opt
+  end
+
+
   @selected_field [:id, :version, :account_uuid, :address, :type, :is_verified]
   def account_email_query() do
     from AccountEmail, select: ^@selected_field

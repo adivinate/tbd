@@ -15,7 +15,8 @@ defmodule Plustwo.Domain.Accounts.Commands.UpdateAccount do
 
   alias Plustwo.Domain.Accounts.Commands.UpdateAccount
   alias Plustwo.Domain.Accounts.Validators.{AccountUuidMustExist,
-                                            UniqueAccountHandleName}
+                                            UniqueAccountHandleName,
+                                            UniqueAccountPrimaryEmail}
 
   validates :account_uuid,
             presence: true, uuid: true, by: &AccountUuidMustExist.validate/2
@@ -30,9 +31,16 @@ defmodule Plustwo.Domain.Accounts.Commands.UpdateAccount do
             by: [
               function: &UniqueAccountHandleName.validate/2,
               allow_nil: true,
-              allow_blank: true,
+              allow_blank: false,
             ]
-  validates :primary_email, string: true, email: true
+  validates :primary_email,
+            string: true,
+            email: true,
+            by: [
+              function: &UniqueAccountPrimaryEmail.validate/2,
+              allow_nil: true,
+              allow_blank: false,
+            ]
   validates :primary_email_verification_code, string: true
   validates :new_billing_email, string: true, email: true
   validates :remove_billing_email, string: true, email: true

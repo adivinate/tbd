@@ -1,4 +1,4 @@
-defmodule Plustwo.Domain.Accounts.Validators.UniqueAccountHandleName do
+defmodule Plustwo.Domain.Accounts.Validators.UniqueAccountPrimaryEmail do
   @moduledoc false
 
   use Vex.Validator
@@ -11,7 +11,7 @@ defmodule Plustwo.Domain.Accounts.Validators.UniqueAccountHandleName do
     :ok
   end
   def validate(value, _context) do
-    case Accounts.get_account_by_handle_name(value) do
+    case Accounts.get_user_account_by_primary_email(value) do
       nil -> :ok
       _ -> {:error, "has already been taken"}
     end

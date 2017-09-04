@@ -4,7 +4,7 @@ defmodule Plustwo.Domain.Accounts do
   alias Plustwo.Infrastructure.Repo.Postgres
   alias Plustwo.Domain.Router
   alias Plustwo.Domain.Accounts.Notifications
-  alias Plustwo.Domain.Accounts.Queries.AccountQuery
+  alias Plustwo.Domain.Accounts.Queries.{AccountQuery, AccountEmailQuery}
   alias Plustwo.Domain.Accounts.Schemas.{Account, AccountEmail}
   alias Plustwo.Domain.Accounts.Commands.{RegisterAccount, UpdateAccount}
 
@@ -84,5 +84,20 @@ defmodule Plustwo.Domain.Accounts do
     |> String.downcase()
     |> AccountQuery.by_handle_name(:with_assoc)
     |> Postgres.one()
+  end
+
+  @doc "Retrieves a user account by primary_email, or return `nil` if not found."
+  def get_user_account_by_primary_email(primary_email)
+      when is_binary(primary_email) do
+    case primary_email
+         |> String.downcase()
+         |> AccountEmailQuery.by_address(0, :with_assoc)
+         |> Postgres.one() do
+      nil ->
+        nil
+
+      %{account_uuid: account_uuid} ->
+        get_account_by_uuid(account_uuid)
+    end
   end
 end
