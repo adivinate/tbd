@@ -4,19 +4,23 @@ defmodule Plustwo.Infrastructure.Components.Crypto do
   alias Comeonin.Bcrypt
 
   @doc "Hash a value."
-  def hash(value, :bcrypt) do
-    Bcrypt.hashpwsalt(value)
-  end
-  def hash(value, _hash_function) do
-    value
+  def hash(value, hash_function) do
+    case hash_function do
+      :bcrypt ->
+        Bcrypt.hashpwsalt(value)
+      _ ->
+        value
+    end
   end
 
   @doc "Verify a hash."
-  def verify(value, hash, :bcrypt) do
-    Bcrypt.checkpw(value, hash)
-  end
-  def verify(value, _hash, _hash_function) do
-    value
+  def verify(value, hash, hash_function) do
+    case hash_function do
+      :bcrypt ->
+        Bcrypt.checkpw(value, hash)
+      _ ->
+        value
+    end
   end
 
   @doc "Compare a password with its hash."

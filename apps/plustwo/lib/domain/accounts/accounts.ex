@@ -1,5 +1,5 @@
 defmodule Plustwo.Domain.Accounts do
-  @moduledoc "This is a central account for user / organization. Each of them\nwill have an account.\n"
+  @moduledoc "This is a central account for user / organization. Each of them will have an account."
 
   alias Plustwo.Infrastructure.Repo.Postgres
   alias Plustwo.Domain.Router
@@ -30,32 +30,28 @@ defmodule Plustwo.Domain.Accounts do
   end
 
 
-  @doc """
-  Updates an account.
+  @doc "Updates an account.\n\n## Function Arguments\n\nDifferent kinds of updates require different sets of function arguments.\n\n  1. Update account activation status\n    - is_activated\n  2. Update account suspension status\n    - is_suspended\n  3. Update account employee status\n    - is_employee\n  4. Update account handle name\n    - handle_name\n  5. Update account primary email\n    - primary_email\n  6. Verify account primary email\n    - primary_email_verification_code\n  7. Add new billing email\n    - new_billing_email\n  8. Remove an existing billing email\n  - remove_billing_email\n\n"
+  def update_account(%Account{uuid: account_uuid},
+                     %{primary_email: primary_email} = attrs) do
+    command =
+      attrs
+      |> UpdateAccount.new()
+      |> UpdateAccount.assign_account_uuid(account_uuid)
+      |> UpdateAccount.downcase_primary_email()
+    with {:ok, version} <-
+           Router.dispatch(command, include_aggregate_version: true) do
+      Notifications.wait_for AccountEmail,
+                             account_uuid,
+                             primary_email,
+                             0,
+                             version
+    else
+      reply ->
+        reply
+    end
+  end
 
-  ## Function Arguments
-
-  Different kinds of updates require different sets of function arguments.
-
-    1. Update account activation status
-      - is_activated
-    2. Update account suspension status
-      - is_suspended
-    3. Update account employee status
-      - is_employee
-    4. Update account handle name
-      - handle_name
-    5. Update account primary email
-      - primary_email
-    6. Verify account primary email
-      - primary_email_verification_code
-    7. Add new billing email
-      - new_billing_email
-    8. Remove an existing billing email
-    - remove_billing_email
-
-  """
-  def update_account(%Account{uuid: account_uuid}, attrs \\ %{}) do
+  def update_account(%Account{uuid: account_uuid}, attrs) do
     command =
       attrs
       |> UpdateAccount.new()
@@ -77,7 +73,7 @@ defmodule Plustwo.Domain.Accounts do
   @doc "Retrieves an account by UUID, or return `nil` if not found."
   def get_account_by_uuid(uuid) do
     uuid
-    |> AccountQuery.by_uuid()
+    |> AccountQuery.by_uuid(:with_assoc)
     |> Postgres.one()
   end
 
@@ -86,7 +82,7 @@ defmodule Plustwo.Domain.Accounts do
   def get_account_by_handle_name(handle_name) when is_binary(handle_name) do
     handle_name
     |> String.downcase()
-    |> AccountQuery.by_handle_name()
+    |> AccountQuery.by_handle_name(:with_assoc)
     |> Postgres.one()
   end
 end

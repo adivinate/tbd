@@ -5,33 +5,38 @@ defmodule Plustwo.Domain.Accounts.Queries.AccountEmailQuery do
 
   alias Plustwo.Domain.Accounts.Schemas.AccountEmail
 
-  @selected_field [
-    :id,
-    :version,
-    :account_uuid,
-    :address,
-    :type,
-    :is_verified,
-  ]
-
-  def by_account_uuid(account_uuid) do
+  def by_account_uuid(account_uuid, opt) do
     where = [account_uuid: account_uuid]
-    email_query(where)
+    account_email_query where, opt
   end
-  def by_account_uuid(account_uuid, version) do
+
+  def by_account_uuid(account_uuid, email_type, opt) do
+    where = [account_uuid: account_uuid, type: email_type]
+    account_email_query where, opt
+  end
+
+  def by_account_uuid(account_uuid, email_address, email_type, version, opt) do
     where = [
       account_uuid: account_uuid,
       version: version,
+      address: email_address,
+      type: email_type,
     ]
-    email_query(where)
+    account_email_query where, opt
   end
 
-  def email_query() do
+
+  @selected_field [:id, :version, :account_uuid, :address, :type, :is_verified]
+  def account_email_query() do
     from AccountEmail, select: ^@selected_field
   end
-  def email_query(w) do
-    from AccountEmail,
-      where: ^w,
-      select: ^@selected_field
+  def account_email_query(w, opt) do
+    case opt do
+      :no_assoc ->
+        from AccountEmail, where: ^(w)
+
+      :with_assoc ->
+        from AccountEmail, select: ^(@selected_field), where: ^(w)
+    end
   end
 end

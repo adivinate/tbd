@@ -5,7 +5,7 @@ defmodule Plustwo.Domain.Accounts.Projectors.Account do
 
   alias Plustwo.Domain.Accounts.Notifications
   alias Plustwo.Domain.Accounts.Schemas.{Account, AccountEmail}
-  alias Plustwo.Domain.Accounts.Queries.AccountQuery
+  alias Plustwo.Domain.Accounts.Queries.{AccountQuery, AccountEmailQuery}
   alias Plustwo.Domain.Accounts.Events.{AccountActivated,
                                         #AccountBillingEmailAdded,
                                         #AccountBillingEmailRemoved,
@@ -15,7 +15,7 @@ defmodule Plustwo.Domain.Accounts.Projectors.Account do
                                         AccountMarkedAsEmployee,
                                         AccountMarkedAsNonContributor,
                                         AccountMarkedAsNonEmployee,
-                                        #AccountPrimaryEmailUpdated,
+                                        AccountPrimaryEmailUpdated,
                                         #AccountPrimaryEmailVerified,
                                         AccountRegistered,
                                         AccountSuspended,
@@ -52,6 +52,14 @@ defmodule Plustwo.Domain.Accounts.Projectors.Account do
           metadata do
     update_account multi, uuid, metadata, is_employee: is_employee
   end
+  project %AccountPrimaryEmailUpdated{} = updated, metadata do
+    update_account_email multi,
+                         updated.uuid,
+                         0,
+                         metadata,
+                         address: updated.primary_email,
+                         is_verified: updated.is_primary_email_verified
+  end
   project %AccountRegistered{} = registered, %{stream_version: version} do
     multi
     |> Ecto.Multi.insert(:account,
@@ -85,7 +93,22 @@ defmodule Plustwo.Domain.Accounts.Projectors.Account do
   defp update_account(multi, uuid, metadata, changes) do
     Ecto.Multi.update_all multi,
                           :account,
-                          AccountQuery.by_uuid(uuid),
+                          AccountQuery.by_uuid(uuid, :no_assoc),
+                          [set: changes ++ [version: metadata.stream_version]],
+                          returning: true
+  end
+
+
+  defp update_account_email(multi,
+                            account_uuid,
+                            email_type,
+                            metadata,
+                            changes) do
+    Ecto.Multi.update_all multi,
+                          :account_email,
+                          AccountEmailQuery.by_account_uuid(account_uuid,
+                                                            email_type,
+                                                            :no_assoc),
                           [set: changes ++ [version: metadata.stream_version]],
                           returning: true
   end

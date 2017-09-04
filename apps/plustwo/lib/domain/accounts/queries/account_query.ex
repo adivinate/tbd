@@ -6,6 +6,23 @@ defmodule Plustwo.Domain.Accounts.Queries.AccountQuery do
   alias Plustwo.Domain.Accounts.Queries.AccountEmailQuery
   alias Plustwo.Domain.Accounts.Schemas.Account
 
+  # this is useful for Multi `update_all`
+  def by_uuid(uuid, opt) do
+    where = [uuid: uuid]
+    account_query where, opt
+  end
+
+  def by_uuid(uuid, version, opt) do
+    where = [uuid: uuid, version: version]
+    account_query where, opt
+  end
+
+
+  def by_handle_name(handle_name, opt) do
+    where = [handle_name: handle_name]
+    account_query where, opt
+  end
+
   @selected_field [
     :uuid,
     :version,
@@ -17,27 +34,16 @@ defmodule Plustwo.Domain.Accounts.Queries.AccountQuery do
     :handle_name,
     :joined_at,
   ]
-  def by_uuid(uuid) do
-    where = [uuid: uuid]
-    account_query where
-  end
+  defp account_query(w, opt) do
+    case opt do
+      :no_assoc ->
+        from Account, where: ^(w)
 
-  def by_uuid(uuid, version) do
-    where = [uuid: uuid, version: version]
-    account_query where
-  end
-
-
-  def by_handle_name(handle_name) do
-    where = [handle_name: handle_name]
-    account_query where
-  end
-
-
-  defp account_query(w) do
-    from Account,
-         preload: [emails: ^(AccountEmailQuery.email_query())],
-         select: ^(@selected_field),
-         where: ^(w)
+      :with_assoc ->
+        from Account,
+             preload: [emails: ^(AccountEmailQuery.account_email_query())],
+             select: ^(@selected_field),
+             where: ^(w)
+    end
   end
 end

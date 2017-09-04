@@ -27,9 +27,15 @@ defmodule Plustwo.Domain.Accounts.Commands.UpdateAccount do
             string: true,
             handle_name: true,
             length: [min: 2, allow_nil: true, allow_blank: true],
-            by: [function: &UniqueAccountHandleName.validate/2, allow_nil: true, allow_blank: true]
+            by: [
+              function: &UniqueAccountHandleName.validate/2,
+              allow_nil: true,
+              allow_blank: true,
+            ]
   validates :primary_email, string: true, email: true
   validates :primary_email_verification_code, string: true
+  validates :new_billing_email, string: true, email: true
+  validates :remove_billing_email, string: true, email: true
 
   @doc "Assign account UUID."
   def assign_account_uuid(%UpdateAccount{} = account, account_uuid) do
@@ -45,5 +51,16 @@ defmodule Plustwo.Domain.Accounts.Commands.UpdateAccount do
   def downcase_handle_name(%UpdateAccount{handle_name: handle_name} =
                              account) do
     %UpdateAccount{account | handle_name: String.downcase(handle_name)}
+  end
+
+
+  @doc "Downcase account primary email"
+  def downcase_primary_email(%UpdateAccount{primary_email: nil} = account) do
+    account
+  end
+
+  def downcase_primary_email(%UpdateAccount{primary_email: primary_email} =
+                               account) do
+    %UpdateAccount{account | primary_email: String.downcase(primary_email)}
   end
 end
