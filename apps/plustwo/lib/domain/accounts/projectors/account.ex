@@ -93,7 +93,7 @@ defmodule Plustwo.Domain.Accounts.Projectors.Account do
   defp update_account(multi, uuid, metadata, changes) do
     Ecto.Multi.update_all multi,
                           :account,
-                          AccountQuery.by_uuid(uuid, :no_assoc),
+                          AccountQuery.by_uuid(uuid),
                           [set: changes ++ [version: metadata.stream_version]],
                           returning: true
   end
@@ -107,8 +107,7 @@ defmodule Plustwo.Domain.Accounts.Projectors.Account do
     Ecto.Multi.update_all multi,
                           :account_email,
                           AccountEmailQuery.by_account_uuid(account_uuid,
-                                                            email_type,
-                                                            :no_assoc),
+                                                            email_type),
                           [set: changes ++ [version: metadata.stream_version]],
                           returning: true
   end

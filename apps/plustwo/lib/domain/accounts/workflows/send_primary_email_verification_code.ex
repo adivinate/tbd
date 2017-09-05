@@ -19,7 +19,7 @@ defmodule Plustwo.Domain.Accounts.Workflows.SendPrimaryEmailVerificationCode do
                                                verification_code: verification_code,
                                              }) do
       {:error, _} ->
-        :ok
+        {:error, "account uuid does not exist"}
 
       _ ->
         :ok

@@ -13,7 +13,7 @@ defmodule Plustwo.Infrastructure.Repo.Postgres.Migrations.CreateAccount do
       add :is_contributor, :boolean
       add :is_org, :boolean
       add :handle_name, :string
-      add :joined_at, :datetime
+      add :joined_at, :utc_datetime
     end
     create unique_index(:plustwo_account,
                         [:handle_name],
