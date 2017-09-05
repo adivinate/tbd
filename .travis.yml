@@ -1,0 +1,9 @@
+matrix:
+  include:
+    - language: elixir
+      elixir: 1.5.1
+      before_script:
+        - mix deps.get
+        - mix deps.compile
+      script:
+        - mix credo
