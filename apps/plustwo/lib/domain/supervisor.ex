@@ -11,6 +11,7 @@ defmodule Plustwo.Domain.Supervisor do
   def init(_) do
     children = [
       supervisor(Plustwo.Domain.Accounts.Supervisor, []),
+      supervisor(Plustwo.Domain.Users.Supervisor, []),
     ]
     supervise children, strategy: :one_for_one
   end
