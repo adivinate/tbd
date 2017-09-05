@@ -11,7 +11,7 @@ defmodule Plustwo.Domain.Accounts do
   ##########
   # Mutations
   ##########
-  @doc "Register an account for a user or an organization."
+  @doc "Registers an account for a user or an organization."
   def register_account(attrs \\ %{}) do
     account_uuid = UUID.uuid4()
     command =
@@ -30,7 +30,7 @@ defmodule Plustwo.Domain.Accounts do
   end
 
 
-  @doc "Updates an account.\n\n## Function Arguments\n\nDifferent kinds of updates require different sets of function arguments.\n\n  1. Update account activation status\n    - is_activated\n  2. Update account suspension status\n    - is_suspended\n  3. Update account employee status\n    - is_employee\n  4. Update account handle name\n    - handle_name\n  5. Update account primary email\n    - primary_email\n  6. Verify account primary email\n    - primary_email_verification_code\n  7. Add new billing email\n    - new_billing_email\n  8. Remove an existing billing email\n  - remove_billing_email\n\n"
+  @doc "Updates an account."
   def update_account(%Account{uuid: account_uuid},
                      %{primary_email: primary_email} = attrs) do
     command =
@@ -71,9 +71,9 @@ defmodule Plustwo.Domain.Accounts do
   # Queries
   ##########
   @doc "Retrieves an account by UUID, or return `nil` if not found."
-  def get_account_by_uuid(uuid) do
-    uuid
-    |> AccountQuery.by_uuid(:with_assoc)
+  def get_account_by_uuid(account_uuid) do
+    account_uuid
+    |> AccountQuery.by_uuid()
     |> Postgres.one()
   end
 
@@ -82,7 +82,7 @@ defmodule Plustwo.Domain.Accounts do
   def get_account_by_handle_name(handle_name) when is_binary(handle_name) do
     handle_name
     |> String.downcase()
-    |> AccountQuery.by_handle_name(:with_assoc)
+    |> AccountQuery.by_handle_name()
     |> Postgres.one()
   end
 
@@ -91,13 +91,13 @@ defmodule Plustwo.Domain.Accounts do
       when is_binary(primary_email) do
     case primary_email
          |> String.downcase()
-         |> AccountEmailQuery.by_address(0, :with_assoc)
+         |> AccountEmailQuery.by_address(0)
          |> Postgres.one() do
       nil ->
         nil
 
       %{account_uuid: account_uuid} ->
-        get_account_by_uuid(account_uuid)
+        get_account_by_uuid account_uuid
     end
   end
 end

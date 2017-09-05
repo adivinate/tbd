@@ -5,9 +5,9 @@ defmodule Plustwo.Domain.Accounts.Notifications do
   alias Plustwo.Domain.Accounts.Schemas.{Account, AccountEmail}
   alias Plustwo.Domain.Accounts.Queries.{AccountQuery, AccountEmailQuery}
 
-  @doc "Wait until the given read model is updated to the given version."
+  @doc "Waits until the given read model is updated to the given version."
   def wait_for(Account, uuid, version) do
-    case Postgres.one(AccountQuery.by_uuid(uuid, version, :with_assoc)) do
+    case Postgres.one(AccountQuery.by_uuid(uuid, version)) do
       nil ->
         subscribe_and_wait Account, uuid, version
 
@@ -24,8 +24,7 @@ defmodule Plustwo.Domain.Accounts.Notifications do
     case Postgres.one(AccountEmailQuery.by_account_uuid(account_uuid,
                                                         email_address,
                                                         email_type,
-                                                        version,
-                                                        :with_assoc)) do
+                                                        version)) do
       nil ->
         subscribe_and_wait AccountEmail,
                            account_uuid,
@@ -39,7 +38,7 @@ defmodule Plustwo.Domain.Accounts.Notifications do
   end
 
 
-  @doc "Publish updated account read model to interested subscribers."
+  @doc "Publishes updated account read model to interested subscribers."
   def publish_changes(%{account: %Account{} = account}) do
     publish account
   end
@@ -74,7 +73,10 @@ defmodule Plustwo.Domain.Accounts.Notifications do
                       end
   end
 
-  defp publish(%AccountEmail{account_uuid: account_uuid, address: email_address, type: email_type, version: version} =
+  defp publish(%AccountEmail{account_uuid: account_uuid,
+                             address: email_address,
+                             type: email_type,
+                             version: version} =
                  account_email) do
     Registry.dispatch Plustwo.Domain.Accounts,
                       {AccountEmail,
