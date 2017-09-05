@@ -34,3 +34,10 @@ db
 # Node JS
 
 node_modules/
+
+# ReasonML
+bs
+.merlin
+
+# NextJS
+.next
