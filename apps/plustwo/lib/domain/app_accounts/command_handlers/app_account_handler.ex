@@ -2,10 +2,8 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
   @moduledoc false
 
   @behaviour Commanded.Commands.Handler
-  alias Plustwo.Infrastructure.Repo.Postgres
-  alias Plustwo.Infrastructure.Components.Crypto
+  alias Plustwo.Infrastructure.Components.{Crypto, EmailVerification}
   alias Plustwo.Domain.AppAccounts.Aggregates.AppAccount
-  alias Plustwo.Domain.AppAccounts.Schemas.AppAccountPrimaryEmailVerificationCode
   alias Plustwo.Domain.AppAccounts.Commands.{RegisterAppAccount,
                                              UpdateAppAccount}
   alias Plustwo.Domain.AppAccounts.Events.{AppAccountActivated,
@@ -255,7 +253,7 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
 
   defp primary_email_verified(%AppAccount{uuid: uuid},
                               %UpdateAppAccount{primary_email_verification_code: primary_email_verification_code}) do
-    case get_primary_email_verification_code_hash_by_app_account_uuid(uuid) do
+    case EmailVerification.get_code_hash(%{app_account_uuid: uuid, email_type: 0}) do
       nil ->
         {:error, "unable to verify email verification code"}
 
@@ -311,19 +309,5 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
                              %UpdateAppAccount{remove_billing_email: remove_billing_email}) do
     %AppAccountBillingEmailRemoved{uuid: uuid,
                                    billing_email: remove_billing_email}
-  end
-
-
-  # Retrieves primary email verification code hash by app account UUID,
-  # or return `nil` if not found.
-  defp get_primary_email_verification_code_hash_by_app_account_uuid(app_account_uuid) do
-    case Postgres.get_by(AppAccountPrimaryEmailVerificationCode,
-                         app_account_uuid: app_account_uuid) do
-      nil ->
-        nil
-
-      email_verification_code ->
-        Map.get email_verification_code, :verification_code_hash
-    end
   end
 end
