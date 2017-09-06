@@ -9,6 +9,9 @@ config :plustwo, Plustwo.Application.Endpoint,
 # Print only warnings and errors during test
 config :logger, level: :warn
 
+config :ex_unit,
+  capture_log: true
+
 # Configure your database
 config :plustwo, Plustwo.Infrastructure.Repo.Postgres,
   adapter: Ecto.Adapters.Postgres,
@@ -16,7 +19,7 @@ config :plustwo, Plustwo.Infrastructure.Repo.Postgres,
   password: "postgres",
   database: "plustwo_test",
   hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
+  pool_size: 1
 
 # Configure Postgres database for events
 config :eventstore, EventStore.Storage,
@@ -25,9 +28,11 @@ config :eventstore, EventStore.Storage,
   password: "postgres",
   database: "plustwo_event_store_test",
   hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
+  pool_size: 1
 
 # Configure Redis
 config :redis,
   host: "localhost",
   port: 6379
+
+config :bcrypt_elixir, :log_rounds, 4

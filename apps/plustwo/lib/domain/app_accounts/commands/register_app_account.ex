@@ -4,7 +4,7 @@ defmodule Plustwo.Domain.AppAccounts.Commands.RegisterAppAccount do
   defstruct uuid: "",
             is_org: false,
             handle_name: "",
-            org_owner_account_uuid: "",
+            org_owner_app_account_uuid: "",
             email: ""
   use Plustwo.Domain, :command
 
@@ -25,7 +25,7 @@ defmodule Plustwo.Domain.AppAccounts.Commands.RegisterAppAccount do
               allow_blank: false,
               allow_nil: false,
             ]
-  validates :org_owner_account_uuid,
+  validates :org_owner_app_account_uuid,
             presence: [if: [is_org: true]],
             uuid: true,
             by: [

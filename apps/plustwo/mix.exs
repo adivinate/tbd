@@ -108,9 +108,9 @@ defmodule Plustwo.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      "ecto.setup": ["ecto.create", "event_store.create", "ecto.migrate"],
-      "ecto.reset": ["ecto.drop", "event_store.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate", "test"],
+      "app.setup": ["ecto.create", "event_store.create", "ecto.migrate"],
+      "app.reset": ["ecto.drop", "event_store.drop", "app.setup"],
+      test: ["test"],
     ]
   end
 end

@@ -16,8 +16,7 @@ defmodule Plustwo.Domain.AppUsers.Workflows.CreateAppUserFromAppAccount do
       {:ok, _app_user} ->
         :ok
 
-      reply ->
-        IO.inspect(reply)
+      _ ->
         {:error, "unable to create app user"}
     end
   end

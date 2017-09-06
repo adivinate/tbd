@@ -2,8 +2,16 @@ matrix:
   include:
     - language: elixir
       elixir: 1.5.1
+      services:
+        - postgresql
+      addons:
+        postgresql: "9.6"
       before_script:
         - mix deps.get
         - mix deps.compile
       script:
         - mix credo
+        - cd apps/plustwo
+        - MIX_ENV=test mix app.reset
+        - cd ../..
+        - mix test
