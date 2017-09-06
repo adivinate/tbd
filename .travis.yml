@@ -11,4 +11,7 @@ matrix:
         - mix deps.compile
       script:
         - mix credo
+        - cd apps/plustwo
+        - MIX_ENV=test mix event_store.create
+        - cd ../..
         - mix test
