@@ -14,15 +14,15 @@ defmodule Plustwo.Domain.Accounts.Workflows.SendPrimaryEmailVerificationCode do
   def handle(%AccountRegistered{uuid: uuid, email: email, is_org: false},
              _metadata) do
     verification_code = UUID.uuid4(:hex)
-    case set_account_email_verification_code(%{
-                                               account_uuid: uuid,
-                                               verification_code: verification_code,
-                                             }) do
-      {:error, _} ->
-        {:error, "account uuid does not exist"}
+    case set_account_primary_email_verification_code(%{
+                                                       account_uuid: uuid,
+                                                       verification_code: verification_code,
+                                                     }) do
+      {:ok, _primary_email_verification_code} ->
+        :ok
 
       _ ->
-        :ok
+        {:error, "unable to send email verification code"}
     end
   end
 
@@ -45,7 +45,7 @@ defmodule Plustwo.Domain.Accounts.Workflows.SendPrimaryEmailVerificationCode do
   end
 
 
-  defp set_account_email_verification_code(attrs) do
+  defp set_account_primary_email_verification_code(attrs) do
     %AccountPrimaryEmailVerificationCode{}
     |> changeset(hash_verification_code(attrs))
     |> Postgres.insert_or_update()

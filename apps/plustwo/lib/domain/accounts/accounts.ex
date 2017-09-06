@@ -8,9 +8,6 @@ defmodule Plustwo.Domain.Accounts do
   alias Plustwo.Domain.Accounts.Schemas.{Account, AccountEmail}
   alias Plustwo.Domain.Accounts.Commands.{RegisterAccount, UpdateAccount}
 
-  ##########
-  # Mutations
-  ##########
   @doc "Registers an account for a user or an organization."
   def register_account(attrs \\ %{}) do
     account_uuid = UUID.uuid4()
@@ -36,7 +33,7 @@ defmodule Plustwo.Domain.Accounts do
     command =
       attrs
       |> UpdateAccount.new()
-      |> UpdateAccount.assign_account_uuid(account_uuid)
+      |> UpdateAccount.assign_uuid(account_uuid)
       |> UpdateAccount.downcase_primary_email()
     with {:ok, version} <-
            Router.dispatch(command, include_aggregate_version: true) do
@@ -55,7 +52,7 @@ defmodule Plustwo.Domain.Accounts do
     command =
       attrs
       |> UpdateAccount.new()
-      |> UpdateAccount.assign_account_uuid(account_uuid)
+      |> UpdateAccount.assign_uuid(account_uuid)
       |> UpdateAccount.downcase_handle_name()
     with {:ok, version} <-
            Router.dispatch(command, include_aggregate_version: true) do
@@ -67,9 +64,6 @@ defmodule Plustwo.Domain.Accounts do
   end
 
 
-  ##########
-  # Queries
-  ##########
   @doc "Retrieves an account by UUID, or return `nil` if not found."
   def get_account_by_uuid(account_uuid) do
     account_uuid

@@ -1,7 +1,7 @@
 defmodule Plustwo.Domain.Users.Commands.UpdateUser do
   @moduledoc false
 
-  defstruct user_uuid: "",
+  defstruct uuid: "",
             given_name: "",
             middle_name: "",
             family_name: "",
@@ -15,8 +15,7 @@ defmodule Plustwo.Domain.Users.Commands.UpdateUser do
                                          WithinRangeBirthdateDay,
                                          WithinRangeBirthdateYear}
 
-  validates :user_uuid,
-            presence: true, uuid: true, by: &UserUuidMustExist.validate/2
+  validates :uuid, presence: true, uuid: true, by: &UserUuidMustExist.validate/2
   validates :given_name, string: true
   validates :middle_name, string: true
   validates :family_name, string: true
@@ -39,7 +38,7 @@ defmodule Plustwo.Domain.Users.Commands.UpdateUser do
             ]
 
   @doc "Assign user UUID."
-  def assign_user_uuid(%UpdateUser{} = user, user_uuid) do
-    %UpdateUser{user | user_uuid: user_uuid}
+  def assign_uuid(%UpdateUser{} = user, uuid) do
+    %UpdateUser{user | uuid: uuid}
   end
 end

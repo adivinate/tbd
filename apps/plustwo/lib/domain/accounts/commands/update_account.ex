@@ -1,7 +1,7 @@
 defmodule Plustwo.Domain.Accounts.Commands.UpdateAccount do
   @moduledoc false
 
-  defstruct account_uuid: "",
+  defstruct uuid: "",
             is_activated: nil,
             is_suspended: nil,
             is_employee: nil,
@@ -18,7 +18,7 @@ defmodule Plustwo.Domain.Accounts.Commands.UpdateAccount do
                                             UniqueAccountHandleName,
                                             UniqueAccountPrimaryEmail}
 
-  validates :account_uuid,
+  validates :uuid,
             presence: true, uuid: true, by: &AccountUuidMustExist.validate/2
   validates :is_activated, boolean: true
   validates :is_suspended, boolean: true
@@ -46,8 +46,8 @@ defmodule Plustwo.Domain.Accounts.Commands.UpdateAccount do
   validates :remove_billing_email, string: true, email: true
 
   @doc "Assign account UUID."
-  def assign_account_uuid(%UpdateAccount{} = account, account_uuid) do
-    %UpdateAccount{account | account_uuid: account_uuid}
+  def assign_uuid(%UpdateAccount{} = account, uuid) do
+    %UpdateAccount{account | uuid: uuid}
   end
 
 

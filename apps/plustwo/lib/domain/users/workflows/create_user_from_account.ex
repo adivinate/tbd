@@ -11,8 +11,13 @@ defmodule Plustwo.Domain.Users.Workflows.CreateUserFromAccount do
 
   def handle(%AccountRegistered{uuid: account_uuid, is_org: false},
              _metadata) do
-    {:ok, _user} = create_user(%{account_uuid: account_uuid})
-    :ok
+    case create_user(%{account_uuid: account_uuid}) do
+      {:ok, _user} ->
+        :ok
+
+      _ ->
+        {:error, "unable to create user"}
+    end
   end
 
 

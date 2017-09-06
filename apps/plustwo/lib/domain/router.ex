@@ -11,10 +11,8 @@ defmodule Plustwo.Domain.Router do
   alias Plustwo.Domain.Users.Commands.{CreateUser, UpdateUser}
 
   middleware Plustwo.Infrastructure.Validation.Middlewares.Validate
-  dispatch [RegisterAccount],
+  dispatch [RegisterAccount, UpdateAccount],
            to: AccountHandler, aggregate: Account, identity: :uuid
-  dispatch [UpdateAccount],
-           to: AccountHandler, aggregate: Account, identity: :account_uuid
-  dispatch [CreateUser], to: UserHandler, aggregate: User, identity: :uuid
-  dispatch [UpdateUser], to: UserHandler, aggregate: User, identity: :user_uuid
+  dispatch [CreateUser, UpdateUser],
+           to: UserHandler, aggregate: User, identity: :uuid
 end

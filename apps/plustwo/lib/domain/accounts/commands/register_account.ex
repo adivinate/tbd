@@ -1,12 +1,17 @@
 defmodule Plustwo.Domain.Accounts.Commands.RegisterAccount do
   @moduledoc false
 
-  defstruct uuid: "", is_org: "", handle_name: "", email: ""
+  defstruct uuid: "",
+            is_org: false,
+            handle_name: "",
+            org_owner_account_uuid: "",
+            email: ""
   use Plustwo.Domain, :command
 
   alias Plustwo.Domain.Accounts.Commands.RegisterAccount
   alias Plustwo.Domain.Accounts.Validators.{UniqueAccountHandleName,
-                                            UniqueAccountPrimaryEmail}
+                                            UniqueAccountPrimaryEmail,
+                                            AccountUuidMustExist}
 
   validates :uuid, presence: true, uuid: true
   validates :is_org, boolean: true
@@ -19,6 +24,14 @@ defmodule Plustwo.Domain.Accounts.Commands.RegisterAccount do
               function: &UniqueAccountHandleName.validate/2,
               allow_blank: false,
               allow_nil: false,
+            ]
+  validates :org_owner_account_uuid,
+            presence: [if: [is_org: true]],
+            uuid: true,
+            by: [
+              function: &AccountUuidMustExist.validate/2,
+              allow_blank: true,
+              allow_nil: nil,
             ]
   validates :email,
             presence: true,
@@ -43,7 +56,7 @@ defmodule Plustwo.Domain.Accounts.Commands.RegisterAccount do
   end
 
 
-  @doc "Downcase account's email."
+  @doc "Downcase account email."
   def downcase_email(%RegisterAccount{email: email} = account) do
     %RegisterAccount{account | email: String.downcase(email)}
   end

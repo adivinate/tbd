@@ -16,7 +16,7 @@ defmodule Plustwo.Domain.Users do
     command =
       attrs
       |> UpdateUser.new()
-      |> UpdateUser.assign_user_uuid(user_uuid)
+      |> UpdateUser.assign_uuid(user_uuid)
     with {:ok, version} <-
            Router.dispatch(command, include_aggregate_version: true) do
       Notifications.wait_for User, user_uuid, version
