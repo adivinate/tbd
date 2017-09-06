@@ -11,7 +11,4 @@ matrix:
         - mix deps.compile
       script:
         - mix credo
-        - cd apps/plustwo
-        - MIX_ENV=test mix app.reset
-        - cd ../..
         - mix test
