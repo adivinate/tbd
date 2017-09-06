@@ -23,6 +23,6 @@ defmodule Plustwo.Domain.AppAccounts.Queries.AppAccountQuery do
 
 
   defp app_account_query(w) do
-    from AppAccount, preload: [:emails], where: ^(w)
+    from AppAccount, where: ^(w)
   end
 end
