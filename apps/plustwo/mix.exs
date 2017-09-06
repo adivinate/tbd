@@ -110,7 +110,7 @@ defmodule Plustwo.Mixfile do
     [
       "app.setup": ["ecto.create", "event_store.create", "ecto.migrate"],
       "app.reset": ["ecto.drop", "event_store.drop", "app.setup"],
-      test: ["test"],
+      test: ["ecto.create --quiet", "event_store.create", "ecto.migrate", "test"],
     ]
   end
 end
