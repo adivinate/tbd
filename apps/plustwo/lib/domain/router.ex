@@ -3,16 +3,17 @@ defmodule Plustwo.Domain.Router do
 
   use Commanded.Commands.Router
 
-  alias Plustwo.Domain.Accounts.Aggregates.Account
-  alias Plustwo.Domain.Accounts.CommandHandlers.AccountHandler
-  alias Plustwo.Domain.Accounts.Commands.{RegisterAccount, UpdateAccount}
-  alias Plustwo.Domain.Users.Aggregates.User
-  alias Plustwo.Domain.Users.CommandHandlers.UserHandler
-  alias Plustwo.Domain.Users.Commands.{CreateUser, UpdateUser}
+  alias Plustwo.Domain.AppAccounts.Aggregates.AppAccount
+  alias Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler
+  alias Plustwo.Domain.AppAccounts.Commands.{RegisterAppAccount,
+                                             UpdateAppAccount}
+  alias Plustwo.Domain.AppUsers.Aggregates.AppUser
+  alias Plustwo.Domain.AppUsers.CommandHandlers.AppUserHandler
+  alias Plustwo.Domain.AppUsers.Commands.{CreateAppUser, UpdateAppUser}
 
   middleware Plustwo.Infrastructure.Validation.Middlewares.Validate
-  dispatch [RegisterAccount, UpdateAccount],
-           to: AccountHandler, aggregate: Account, identity: :uuid
-  dispatch [CreateUser, UpdateUser],
-           to: UserHandler, aggregate: User, identity: :uuid
+  dispatch [RegisterAppAccount, UpdateAppAccount],
+           to: AppAccountHandler, aggregate: AppAccount, identity: :uuid
+  dispatch [CreateAppUser, UpdateAppUser],
+           to: AppUserHandler, aggregate: AppUser, identity: :uuid
 end
