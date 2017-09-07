@@ -77,16 +77,16 @@ defmodule Plustwo.Domain.AppAccounts do
 
 
   @doc "Retrieves an app account by handle name, or return `nil` if not found."
-  def get_app_account_by_handle_name(handle_name) when is_binary(handle_name) do
+  def get_app_account_by_handle_name(handle_name) do
     handle_name
     |> String.downcase()
     |> AppAccountQuery.by_handle_name()
     |> Postgres.one()
   end
 
+
   @doc "Retrieves a user account by primary_email, or return `nil` if not found."
-  def get_user_app_account_by_primary_email(primary_email)
-      when is_binary(primary_email) do
+  def get_user_app_account_by_primary_email(primary_email) do
     case primary_email
          |> String.downcase()
          |> AppAccountEmailQuery.by_address(0)

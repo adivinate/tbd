@@ -6,21 +6,21 @@ defmodule Plustwo.Domain.AppAccounts.AppAccountsTest do
   alias Plustwo.Domain.AppAccounts
   alias Plustwo.Domain.AppAccounts.Schemas.AppAccount
 
-  describe "register an app account" do
+  describe "app account registration" do
     @tag :integration
     test "should succeed with valid user account data" do
-      assert {:ok, %AppAccount{} = app_account} =
+      assert {:ok, %AppAccount{} = user_account} =
                AppAccounts.register_app_account(%{
                                                   is_org: false,
                                                   handle_name: "meow",
                                                   email: "meow@gmail.com",
                                                 })
-      assert app_account.handle_name == "meow"
-      assert app_account.is_activated == true
-      assert app_account.is_suspended == false
-      assert app_account.is_employee == false
-      assert app_account.is_contributor == false
-      assert app_account.is_org == false
+      assert user_account.handle_name == "meow"
+      assert user_account.is_activated == true
+      assert user_account.is_suspended == false
+      assert user_account.is_employee == false
+      assert user_account.is_contributor == false
+      assert user_account.is_org == false
     end
     @tag :integration
     test "should succeed with valid organization account data" do
