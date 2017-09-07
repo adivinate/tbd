@@ -16,9 +16,10 @@ defmodule Plustwo.Domain.AppAccounts do
     command =
       attrs
       |> RegisterAppAccount.new()
-      |> RegisterAppAccount.assign_uuid(app_account_uuid)
+      |> RegisterAppAccount.assign_app_account_uuid(app_account_uuid)
       |> RegisterAppAccount.downcase_handle_name()
-      |> RegisterAppAccount.downcase_email()
+      |> RegisterAppAccount.downcase_primary_email()
+      |> RegisterAppAccount.downcase_billing_email()
     with {:ok, version} <-
            Router.dispatch(command, include_aggregate_version: true) do
       Notifications.wait_for AppAccount, app_account_uuid, version
@@ -35,7 +36,7 @@ defmodule Plustwo.Domain.AppAccounts do
     command =
       attrs
       |> UpdateAppAccount.new()
-      |> UpdateAppAccount.assign_uuid(app_account_uuid)
+      |> UpdateAppAccount.assign_app_account_uuid(app_account_uuid)
       |> UpdateAppAccount.downcase_primary_email()
     with {:ok, version} <-
            Router.dispatch(command, include_aggregate_version: true) do
@@ -54,7 +55,7 @@ defmodule Plustwo.Domain.AppAccounts do
     command =
       attrs
       |> UpdateAppAccount.new()
-      |> UpdateAppAccount.assign_uuid(app_account_uuid)
+      |> UpdateAppAccount.assign_app_account_uuid(app_account_uuid)
       |> UpdateAppAccount.downcase_handle_name()
       |> UpdateAppAccount.downcase_new_billing_email()
       |> UpdateAppAccount.downcase_remove_billing_email()

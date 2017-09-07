@@ -14,23 +14,11 @@
   "prettier.parser": "babylon",
   "prettier.semi": true,
   "prettier.useTabs": false,
-  "prettier.javascriptEnable": [
-    "javascript",
-    "javascriptreact"
-  ],
-  "prettier.typescriptEnable": [
-    "typescript",
-    "typescriptreact"
-  ],
-  "prettier.cssEnable": [
-    "css",
-    "less",
-    "sass"
-  ],
-  "prettier.jsonEnable": [],
-  "prettier.graphqlEnable": [
-    "graphql"
-  ],
+  "prettier.javascriptEnable": ["javascript", "javascriptreact"],
+  "prettier.typescriptEnable": ["typescript", "typescriptreact"],
+  "prettier.cssEnable": ["css", "less", "sass"],
+  "prettier.jsonEnable": ["json"],
+  "prettier.graphqlEnable": ["graphql"],
   "reason.formatOnSave": true,
   "codedox": {
     "fileheader": {
@@ -40,9 +28,7 @@
         }
       },
       "templates": {
-        "*": [
-          "${license_gpl_3_0}"
-        ]
+        "*": ["${license_gpl_3_0}"]
       }
     }
   }

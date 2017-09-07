@@ -13,7 +13,7 @@ defmodule Plustwo.Domain.Router do
 
   middleware Plustwo.Infrastructure.Validation.Middlewares.Validate
   dispatch [RegisterAppAccount, UpdateAppAccount],
-           to: AppAccountHandler, aggregate: AppAccount, identity: :uuid
+           to: AppAccountHandler, aggregate: AppAccount, identity: :app_account_uuid
   dispatch [CreateAppUser, UpdateAppUser],
-           to: AppUserHandler, aggregate: AppUser, identity: :uuid
+           to: AppUserHandler, aggregate: AppUser, identity: :app_user_uuid
 end

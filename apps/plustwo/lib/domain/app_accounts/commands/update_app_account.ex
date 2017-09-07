@@ -1,7 +1,7 @@
 defmodule Plustwo.Domain.AppAccounts.Commands.UpdateAppAccount do
   @moduledoc false
 
-  defstruct uuid: "",
+  defstruct app_account_uuid: "",
             is_activated: nil,
             is_suspended: nil,
             is_employee: nil,
@@ -18,7 +18,7 @@ defmodule Plustwo.Domain.AppAccounts.Commands.UpdateAppAccount do
                                                UniqueAppAccountHandleName,
                                                UniqueAppAccountPrimaryEmail}
 
-  validates :uuid,
+  validates :app_account_uuid,
             presence: true,
             uuid: true,
             by: [
@@ -37,7 +37,7 @@ defmodule Plustwo.Domain.AppAccounts.Commands.UpdateAppAccount do
             by: [
               function: &UniqueAppAccountHandleName.validate/2,
               allow_nil: true,
-              allow_blank: false,
+              allow_blank: true,
             ]
   validates :primary_email,
             string: true,
@@ -45,15 +45,16 @@ defmodule Plustwo.Domain.AppAccounts.Commands.UpdateAppAccount do
             by: [
               function: &UniqueAppAccountPrimaryEmail.validate/2,
               allow_nil: true,
-              allow_blank: false,
+              allow_blank: true,
             ]
   validates :primary_email_verification_code, string: true
   validates :new_billing_email, string: true, email: true
   validates :remove_billing_email, string: true, email: true
 
   @doc "Assigns app account UUID."
-  def assign_uuid(%UpdateAppAccount{} = app_account, uuid) do
-    %UpdateAppAccount{app_account | uuid: uuid}
+  def assign_app_account_uuid(%UpdateAppAccount{} = app_account,
+                              app_account_uuid) do
+    %UpdateAppAccount{app_account | app_account_uuid: app_account_uuid}
   end
 
 
@@ -93,14 +94,15 @@ defmodule Plustwo.Domain.AppAccounts.Commands.UpdateAppAccount do
                       new_billing_email: String.downcase(new_billing_email)}
   end
 
+
   @doc "Downcases app account remove billing email."
   def downcase_remove_billing_email(%UpdateAppAccount{remove_billing_email: nil} =
-                                   app_account) do
+                                      app_account) do
     app_account
   end
 
   def downcase_remove_billing_email(%UpdateAppAccount{remove_billing_email: remove_billing_email} =
-                                   app_account) do
+                                      app_account) do
     %UpdateAppAccount{app_account |
                       remove_billing_email: String.downcase(remove_billing_email)}
   end

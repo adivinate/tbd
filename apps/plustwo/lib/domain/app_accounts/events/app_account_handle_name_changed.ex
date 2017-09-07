@@ -2,5 +2,5 @@ defmodule Plustwo.Domain.AppAccounts.Events.AppAccountHandleNameChanged do
   @moduledoc false
 
   @derive [Poison.Encoder]
-  defstruct [:uuid, :handle_name]
+  defstruct [:app_account_uuid, :handle_name]
 end

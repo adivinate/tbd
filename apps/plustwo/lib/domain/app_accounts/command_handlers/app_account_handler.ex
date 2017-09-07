@@ -22,37 +22,37 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
                                            AppAccountSuspensionLifted}
 
   @doc "Register an app account for user."
-  def handle(%AppAccount{uuid: nil},
+  def handle(%AppAccount{app_account_uuid: nil},
              %RegisterAppAccount{is_org: false} = register) do
-    %AppAccountRegistered{uuid: register.uuid,
+    %AppAccountRegistered{app_account_uuid: register.app_account_uuid,
                           is_activated: true,
                           is_suspended: false,
                           is_employee: false,
                           is_contributor: false,
                           is_org: false,
                           handle_name: register.handle_name,
-                          email: register.email,
+                          email: register.primary_email,
                           email_type: 0,
                           is_email_verified: false}
   end
 
   @doc "Register an app account for organization."
-  def handle(%AppAccount{uuid: nil},
+  def handle(%AppAccount{app_account_uuid: nil},
              %RegisterAppAccount{is_org: true} = register) do
-    %AppAccountRegistered{uuid: register.uuid,
+    %AppAccountRegistered{app_account_uuid: register.app_account_uuid,
                           is_activated: false,
                           is_suspended: false,
                           is_employee: false,
                           is_contributor: false,
                           is_org: true,
                           handle_name: register.handle_name,
-                          email: register.email,
+                          email: register.billing_email,
                           email_type: 1,
                           is_email_verified: false}
   end
 
   @doc "Update an app account handle name, email, phone, etc.."
-  def handle(%AppAccount{} = user, %UpdateAppAccount{} = update) do
+  def handle(%AppAccount{} = app_account, %UpdateAppAccount{} = update) do
     fns = [
       &handle_name_changed/2,
       &activation_status_updated/2,
@@ -64,7 +64,10 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
       &billing_email_added/2,
       &billing_email_removed/2,
     ]
-    Enum.reduce fns, [], fn change, events -> case change.(user, update) do
+    Enum.reduce fns,
+                [],
+                fn change, events ->
+                  case change.(app_account, update) do
                     nil ->
                       events
 
@@ -73,7 +76,8 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
 
                     event ->
                       [event | events]
-                  end end
+                  end
+                end
   end
 
 
@@ -91,9 +95,10 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
     nil
   end
 
-  defp handle_name_changed(%AppAccount{uuid: uuid},
+  defp handle_name_changed(%AppAccount{app_account_uuid: app_account_uuid},
                            %UpdateAppAccount{handle_name: handle_name}) do
-    %AppAccountHandleNameChanged{uuid: uuid, handle_name: handle_name}
+    %AppAccountHandleNameChanged{app_account_uuid: app_account_uuid,
+                                 handle_name: handle_name}
   end
 
 
@@ -112,14 +117,15 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
     nil
   end
 
-  defp activation_status_updated(%AppAccount{uuid: uuid},
+  defp activation_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                  %UpdateAppAccount{is_activated: false}) do
-    %AppAccountDeactivated{uuid: uuid, is_activated: false}
+    %AppAccountDeactivated{app_account_uuid: app_account_uuid,
+                           is_activated: false}
   end
 
-  defp activation_status_updated(%AppAccount{uuid: uuid},
+  defp activation_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                  %UpdateAppAccount{is_activated: true}) do
-    %AppAccountActivated{uuid: uuid, is_activated: true}
+    %AppAccountActivated{app_account_uuid: app_account_uuid, is_activated: true}
   end
 
 
@@ -138,14 +144,15 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
     nil
   end
 
-  defp suspension_status_updated(%AppAccount{uuid: uuid},
+  defp suspension_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                  %UpdateAppAccount{is_suspended: false}) do
-    %AppAccountSuspensionLifted{uuid: uuid, is_suspended: false}
+    %AppAccountSuspensionLifted{app_account_uuid: app_account_uuid,
+                                is_suspended: false}
   end
 
-  defp suspension_status_updated(%AppAccount{uuid: uuid},
+  defp suspension_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                  %UpdateAppAccount{is_suspended: true}) do
-    %AppAccountSuspended{uuid: uuid, is_suspended: true}
+    %AppAccountSuspended{app_account_uuid: app_account_uuid, is_suspended: true}
   end
 
 
@@ -169,14 +176,16 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
     nil
   end
 
-  defp employee_status_updated(%AppAccount{uuid: uuid},
+  defp employee_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                %UpdateAppAccount{is_employee: true}) do
-    %AppAccountMarkedAsEmployee{uuid: uuid, is_employee: true}
+    %AppAccountMarkedAsEmployee{app_account_uuid: app_account_uuid,
+                                is_employee: true}
   end
 
-  defp employee_status_updated(%AppAccount{uuid: uuid},
+  defp employee_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                %UpdateAppAccount{is_employee: false}) do
-    %AppAccountMarkedAsNonEmployee{uuid: uuid, is_employee: false}
+    %AppAccountMarkedAsNonEmployee{app_account_uuid: app_account_uuid,
+                                   is_employee: false}
   end
 
 
@@ -200,14 +209,16 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
     nil
   end
 
-  defp contributor_status_updated(%AppAccount{uuid: uuid},
+  defp contributor_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                   %UpdateAppAccount{is_contributor: true}) do
-    %AppAccountMarkedAsContributor{uuid: uuid, is_contributor: true}
+    %AppAccountMarkedAsContributor{app_account_uuid: app_account_uuid,
+                                   is_contributor: true}
   end
 
-  defp contributor_status_updated(%AppAccount{uuid: uuid},
+  defp contributor_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                   %UpdateAppAccount{is_contributor: false}) do
-    %AppAccountMarkedAsNonContributor{uuid: uuid, is_contributor: false}
+    %AppAccountMarkedAsNonContributor{app_account_uuid: app_account_uuid,
+                                      is_contributor: false}
   end
 
 
@@ -227,11 +238,11 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
      %{app_account: ["organization account does not have primary email"]}}
   end
 
-  defp primary_email_updated(%AppAccount{uuid: uuid},
+  defp primary_email_updated(%AppAccount{app_account_uuid: app_account_uuid},
                              %UpdateAppAccount{primary_email: primary_email}) do
-    %AppAccountPrimaryEmailUpdated{uuid: uuid,
-                                   primary_email: primary_email,
-                                   is_primary_email_verified: false}
+    %AppAccountPrimaryEmailUpdated{app_account_uuid: app_account_uuid,
+                                   email_address: primary_email,
+                                   is_verified: false}
   end
 
 
@@ -251,10 +262,10 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
      %{app_account: ["organization account does not have primary email"]}}
   end
 
-  defp primary_email_verified(%AppAccount{uuid: uuid},
+  defp primary_email_verified(%AppAccount{app_account_uuid: app_account_uuid},
                               %UpdateAppAccount{primary_email_verification_code: primary_email_verification_code}) do
     case EmailVerification.get_code_hash(%{
-                                           app_account_uuid: uuid,
+                                           app_account_uuid: app_account_uuid,
                                            email_type: 0,
                                          }) do
       nil ->
@@ -264,8 +275,8 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
         if Crypto.verify(primary_email_verification_code,
                          email_verification_code_hash,
                          :bcrypt) do
-          %AppAccountPrimaryEmailVerified{uuid: uuid,
-                                          is_primary_email_verified: true}
+          %AppAccountPrimaryEmailVerified{app_account_uuid: app_account_uuid,
+                                          is_verified: true}
         else
           {:error, %{app_account: ["invalid primary email verification code"]}}
         end
@@ -288,9 +299,10 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
     {:error, %{app_account: ["user account does not have billing email"]}}
   end
 
-  defp billing_email_added(%AppAccount{uuid: uuid},
+  defp billing_email_added(%AppAccount{app_account_uuid: app_account_uuid},
                            %UpdateAppAccount{new_billing_email: new_billing_email}) do
-    %AppAccountBillingEmailAdded{uuid: uuid, billing_email: new_billing_email}
+    %AppAccountBillingEmailAdded{app_account_uuid: app_account_uuid,
+                                 email_address: new_billing_email}
   end
 
 
@@ -309,9 +321,9 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
     {:error, %{app_account: ["user account does not have billing email"]}}
   end
 
-  defp billing_email_removed(%AppAccount{uuid: uuid},
+  defp billing_email_removed(%AppAccount{app_account_uuid: app_account_uuid},
                              %UpdateAppAccount{remove_billing_email: remove_billing_email}) do
-    %AppAccountBillingEmailRemoved{uuid: uuid,
-                                   billing_email: remove_billing_email}
+    %AppAccountBillingEmailRemoved{app_account_uuid: app_account_uuid,
+                                   email_address: remove_billing_email}
   end
 end

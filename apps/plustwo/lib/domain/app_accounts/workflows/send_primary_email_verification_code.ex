@@ -7,11 +7,11 @@ defmodule Plustwo.Domain.AppAccounts.Workflows.SendPrimaryEmailVerificationCode 
   alias Plustwo.Infrastructure.Components.EmailVerification
   alias Plustwo.Domain.AppAccounts.Events.AppAccountRegistered
 
-  def handle(%AppAccountRegistered{uuid: uuid, email: email, is_org: false},
+  def handle(%AppAccountRegistered{app_account_uuid: app_account_uuid, email: email, is_org: false},
              _metadata) do
     verification_code = UUID.uuid4(:hex)
     case EmailVerification.set_code(%{
-                                      app_account_uuid: uuid,
+                                      app_account_uuid: app_account_uuid,
                                       email_type: 0,
                                       code: verification_code,
                                     }) do

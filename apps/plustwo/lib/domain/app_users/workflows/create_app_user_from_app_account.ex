@@ -10,7 +10,7 @@ defmodule Plustwo.Domain.AppUsers.Workflows.CreateAppUserFromAppAccount do
   alias Plustwo.Domain.AppUsers.Schemas.AppUser
   alias Plustwo.Domain.AppUsers.Commands.CreateAppUser
 
-  def handle(%AppAccountRegistered{uuid: app_account_uuid, is_org: false},
+  def handle(%AppAccountRegistered{app_account_uuid: app_account_uuid, is_org: false},
              _metadata) do
     case create_app_user(%{app_account_uuid: app_account_uuid}) do
       {:ok, _app_user} ->
@@ -27,7 +27,7 @@ defmodule Plustwo.Domain.AppUsers.Workflows.CreateAppUserFromAppAccount do
     command =
       attrs
       |> CreateAppUser.new()
-      |> CreateAppUser.assign_uuid(app_user_uuid)
+      |> CreateAppUser.assign_app_user_uuid(app_user_uuid)
     with {:ok, version} <-
            Router.dispatch(command, include_aggregate_version: true) do
       Notifications.wait_for AppUser, app_user_uuid, version

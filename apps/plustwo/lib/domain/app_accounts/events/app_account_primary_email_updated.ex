@@ -2,5 +2,5 @@ defmodule Plustwo.Domain.AppAccounts.Events.AppAccountPrimaryEmailUpdated do
   @moduledoc false
 
   @derive [Poison.Encoder]
-  defstruct [:uuid, :primary_email, :is_primary_email_verified]
+  defstruct [:app_account_uuid, :email_address, :is_verified]
 end

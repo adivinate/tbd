@@ -6,10 +6,10 @@ defmodule Plustwo.Domain.AppUsers.Notifications do
   alias Plustwo.Domain.AppUsers.Queries.AppUserQuery
 
   @doc "Waits until the given read model is updated to the given version."
-  def wait_for(AppUser, uuid, version) do
-    case Postgres.one(AppUserQuery.by_uuid(uuid, version)) do
+  def wait_for(AppUser, app_user_uuid, version) do
+    case Postgres.one(AppUserQuery.by_uuid(app_user_uuid, version)) do
       nil ->
-        subscribe_and_wait AppUser, uuid, version
+        subscribe_and_wait AppUser, app_user_uuid, version
 
       projection ->
         {:ok, projection}
@@ -28,9 +28,9 @@ defmodule Plustwo.Domain.AppUsers.Notifications do
   end
 
 
-  defp publish(%AppUser{uuid: uuid, version: version} = app_user) do
+  defp publish(%AppUser{uuid: app_user_uuid, version: version} = app_user) do
     Registry.dispatch Plustwo.Domain.AppUsers,
-                      {AppUser, uuid, version},
+                      {AppUser, app_user_uuid, version},
                       fn entries ->
                         for {pid, _} <- entries do
                           send pid, {AppUser, app_user}
@@ -39,8 +39,10 @@ defmodule Plustwo.Domain.AppUsers.Notifications do
   end
 
 
-  defp subscribe_and_wait(AppUser, uuid, version) do
-    Registry.register Plustwo.Domain.AppUsers, {AppUser, uuid, version}, []
+  defp subscribe_and_wait(AppUser, app_user_uuid, version) do
+    Registry.register Plustwo.Domain.AppUsers,
+                      {AppUser, app_user_uuid, version},
+                      []
     receive do
       {AppUser, projection} ->
         {:ok, projection}

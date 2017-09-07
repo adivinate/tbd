@@ -1,7 +1,7 @@
 defmodule Plustwo.Domain.AppAccounts.Aggregates.AppAccount do
   @moduledoc false
 
-  defstruct uuid: nil,
+  defstruct app_account_uuid: nil,
             is_activated: nil,
             is_suspended: nil,
             is_employee: nil,
@@ -34,13 +34,20 @@ defmodule Plustwo.Domain.AppAccounts.Aggregates.AppAccount do
   def apply(%AppAccount{} = app_account,
             %AppAccountBillingEmailAdded{} = added) do
     %AppAccount{app_account |
-                emails: add_billing_email(app_account.emails, added)}
+                emails: MapSet.put(app_account.emails,
+                                   %{address: added.email_address, type: 1})}
   end
 
-  def apply(%AppAccount{} = app_account,
+  def apply(%AppAccount{emails: emails} = app_account,
             %AppAccountBillingEmailRemoved{} = removed) do
+    current_billing_email =
+      Enum.find(emails,
+                fn email ->
+                  email.type == 1 and email.address == removed.email_address
+                end)
     %AppAccount{app_account |
-                emails: remove_billing_email(app_account.emails, removed)}
+                emails: MapSet.delete(app_account.emails,
+                                      current_billing_email)}
   end
 
   def apply(%AppAccount{} = app_account,
@@ -73,23 +80,41 @@ defmodule Plustwo.Domain.AppAccounts.Aggregates.AppAccount do
     %AppAccount{app_account | is_employee: is_employee}
   end
 
-  def apply(%AppAccount{} = app_account,
+  def apply(%AppAccount{emails: emails} = app_account,
             %AppAccountPrimaryEmailUpdated{} = updated) do
-    %AppAccount{app_account |
-                emails: replace_primary_email(app_account.emails, updated)}
+    %AppAccount{app_account | emails: MapSet.new(emails, fn
+                                                   %{type: 0} =
+                                                        current_primary_email ->
+                                                     %{
+                                                       current_primary_email |
+                                                       address: updated.email_address,
+                                                       is_verified: updated.is_verified,
+                                                     }
+
+                                                   any ->
+                                                     any
+                                                 end)}
   end
 
-  def apply(%AppAccount{} = app_account,
+  def apply(%AppAccount{emails: emails} = app_account,
             %AppAccountPrimaryEmailVerified{} = verified) do
-    %AppAccount{app_account |
-                emails: set_primary_email_verified(app_account.emails,
-                                                   verified)}
+    %AppAccount{app_account | emails: MapSet.new(emails, fn
+                                                   %{type: 0} =
+                                                        current_primary_email ->
+                                                     %{
+                                                       current_primary_email |
+                                                       is_verified: verified.is_verified,
+                                                     }
+
+                                                   any ->
+                                                     any
+                                                 end)}
   end
 
   def apply(%AppAccount{} = app_account,
             %AppAccountRegistered{} = registered) do
     %AppAccount{app_account |
-                uuid: registered.uuid,
+                app_account_uuid: registered.app_account_uuid,
                 is_activated: registered.is_activated,
                 is_suspended: registered.is_suspended,
                 is_employee: registered.is_employee,
@@ -112,53 +137,5 @@ defmodule Plustwo.Domain.AppAccounts.Aggregates.AppAccount do
   def apply(%AppAccount{} = app_account,
             %AppAccountSuspensionLifted{is_suspended: is_suspended}) do
     %AppAccount{app_account | is_suspended: is_suspended}
-  end
-
-
-  defp add_billing_email(emails, %AppAccountBillingEmailAdded{} = added) do
-    MapSet.put emails, %{address: added.billing_email, type: 1}
-  end
-
-
-  defp remove_billing_email(emails,
-                            %AppAccountBillingEmailRemoved{} = removed) do
-    current_billing_email =
-      Enum.find(emails,
-                fn email ->
-                  email.type == 1 and email.address == removed.billing_email
-                end)
-    MapSet.delete emails, current_billing_email
-  end
-
-
-  defp replace_primary_email(emails,
-                             %AppAccountPrimaryEmailUpdated{} = updated) do
-    MapSet.new emails, fn
-                 %{type: 0} = current_primary_email ->
-                   %{
-                     current_primary_email |
-                     address: updated.primary_email,
-                     is_verified: updated.is_primary_email_verified,
-                   }
-
-                 any ->
-                   any
-               end
-  end
-
-
-  defp set_primary_email_verified(emails,
-                                  %AppAccountPrimaryEmailVerified{} =
-                                    verified) do
-    MapSet.new emails, fn
-                 %{type: 0} = current_primary_email ->
-                   %{
-                     current_primary_email |
-                     is_verified: verified.is_primary_email_verified,
-                   }
-
-                 any ->
-                   any
-               end
   end
 end

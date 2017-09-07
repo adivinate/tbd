@@ -1,7 +1,7 @@
 defmodule Plustwo.Domain.AppUsers.Aggregates.AppUser do
   @moduledoc "A user on Plustwo."
 
-  defstruct uuid: nil,
+  defstruct app_user_uuid: nil,
             app_account_uuid: nil,
             family_name: nil,
             given_name: nil,
@@ -22,7 +22,9 @@ defmodule Plustwo.Domain.AppUsers.Aggregates.AppUser do
   end
 
   def apply(%AppUser{} = app_user, %AppUserCreated{} = created) do
-    %AppUser{app_user | uuid: created.uuid, app_account_uuid: created.app_account_uuid}
+    %AppUser{app_user |
+             app_user_uuid: created.app_user_uuid,
+             app_account_uuid: created.app_account_uuid}
   end
 
   def apply(%AppUser{} = app_user, %AppUserNameUpdated{} = updated) do

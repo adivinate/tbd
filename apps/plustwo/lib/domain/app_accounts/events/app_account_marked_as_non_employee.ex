@@ -2,5 +2,5 @@ defmodule Plustwo.Domain.AppAccounts.Events.AppAccountMarkedAsNonEmployee do
   @moduledoc false
 
   @derive [Poison.Encoder]
-  defstruct [:uuid, :is_employee]
+  defstruct [:app_account_uuid, :is_employee]
 end

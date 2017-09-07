@@ -7,7 +7,7 @@ defmodule Plustwo.Domain.AppAccounts.Schemas.AppAccountEmail do
 
   schema "app_account_email" do
     field :version, :integer, default: 0
-    belongs_to :account,
+    belongs_to :app_account,
                AppAccount,
                foreign_key: :app_account_uuid,
                references: :uuid,

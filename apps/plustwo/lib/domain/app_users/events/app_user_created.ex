@@ -2,5 +2,5 @@ defmodule Plustwo.Domain.AppUsers.Events.AppUserCreated do
   @moduledoc false
 
   @derive [Poison.Encoder]
-  defstruct [:uuid, :app_account_uuid]
+  defstruct [:app_user_uuid, :app_account_uuid]
 end

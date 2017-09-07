@@ -1,7 +1,7 @@
 defmodule Plustwo.Domain.AppUsers.Commands.UpdateAppUser do
   @moduledoc false
 
-  defstruct uuid: "",
+  defstruct app_user_uuid: "",
             given_name: "",
             middle_name: "",
             family_name: "",
@@ -15,7 +15,7 @@ defmodule Plustwo.Domain.AppUsers.Commands.UpdateAppUser do
                                             WithinRangeBirthdateDay,
                                             WithinRangeBirthdateYear}
 
-  validates :uuid,
+  validates :app_user_uuid,
             presence: true,
             uuid: true,
             by: [
@@ -44,8 +44,8 @@ defmodule Plustwo.Domain.AppUsers.Commands.UpdateAppUser do
               allow_blank: true,
             ]
 
-  @doc "Assign app user UUID."
-  def assign_uuid(%UpdateAppUser{} = app_user, uuid) do
-    %UpdateAppUser{app_user | uuid: uuid}
+  @doc "Assigns app user UUID."
+  def assign_uuid(%UpdateAppUser{} = app_user, app_user_uuid) do
+    %UpdateAppUser{app_user | app_user_uuid: app_user_uuid}
   end
 end

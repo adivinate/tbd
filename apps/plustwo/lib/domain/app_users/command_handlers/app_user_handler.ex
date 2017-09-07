@@ -9,8 +9,8 @@ defmodule Plustwo.Domain.AppUsers.CommandHandlers.AppUserHandler do
                                         AppUserNameUpdated}
 
   @doc "Create a user."
-  def handle(%AppUser{uuid: nil}, %CreateAppUser{} = create) do
-    %AppUserCreated{uuid: create.uuid,
+  def handle(%AppUser{app_user_uuid: nil}, %CreateAppUser{} = create) do
+    %AppUserCreated{app_user_uuid: create.app_user_uuid,
                     app_account_uuid: create.app_account_uuid}
   end
 
@@ -53,11 +53,11 @@ defmodule Plustwo.Domain.AppUsers.CommandHandlers.AppUserHandler do
     nil
   end
 
-  defp birthdate_updated(%AppUser{uuid: uuid},
+  defp birthdate_updated(%AppUser{app_user_uuid: app_user_uuid},
                          %UpdateAppUser{birthdate_day: birthdate_day,
                                         birthdate_month: birthdate_month,
                                         birthdate_year: birthdate_year}) do
-    %AppUserBirthdateUpdated{uuid: uuid,
+    %AppUserBirthdateUpdated{app_user_uuid: app_user_uuid,
                              birthdate_day: birthdate_day,
                              birthdate_month: birthdate_month,
                              birthdate_year: birthdate_year}
@@ -87,11 +87,11 @@ defmodule Plustwo.Domain.AppUsers.CommandHandlers.AppUserHandler do
     nil
   end
 
-  defp name_updated(%AppUser{uuid: uuid},
+  defp name_updated(%AppUser{app_user_uuid: app_user_uuid},
                     %UpdateAppUser{given_name: given_name,
                                    middle_name: middle_name,
                                    family_name: family_name}) do
-    %AppUserNameUpdated{uuid: uuid,
+    %AppUserNameUpdated{app_user_uuid: app_user_uuid,
                         given_name: given_name,
                         middle_name: middle_name,
                         family_name: family_name}

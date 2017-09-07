@@ -8,7 +8,7 @@ defmodule Plustwo.Domain.AppUsers.Schemas.AppUser do
   @primary_key {:uuid, :binary_id, [autogenerate: false]}
   schema "app_user" do
     field :version, :integer, default: 0
-    belongs_to :account,
+    belongs_to :app_account,
                AppAccount,
                foreign_key: :app_account_uuid,
                references: :uuid,

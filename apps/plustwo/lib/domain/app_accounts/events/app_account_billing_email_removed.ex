@@ -2,5 +2,5 @@ defmodule Plustwo.Domain.AppAccounts.Events.AppAccountBillingEmailRemoved do
   @moduledoc false
 
   @derive [Poison.Encoder]
-  defstruct [:uuid, :billing_email]
+  defstruct [:app_account_uuid, :email_address]
 end

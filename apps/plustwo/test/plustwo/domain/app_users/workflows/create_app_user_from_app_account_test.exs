@@ -16,7 +16,7 @@ defmodule Plustwo.Domain.AppUsers.Workflows.CreateAppUserFromAppAccountTest do
                AppAccounts.register_app_account(%{
                                                   is_org: false,
                                                   handle_name: "meow",
-                                                  email: "meow@gmail.com",
+                                                  primary_email: "meow@gmail.com",
                                                 })
       assert_receive_event AppUserCreated,
                            fn event ->
