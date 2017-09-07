@@ -79,5 +79,101 @@ defmodule Plustwo.Domain.AppAccounts.AppAccountsTest do
                AppAccounts.get_user_app_account_by_primary_email("meow@gmail.com")
       assert registered.uuid == retrieved.uuid
     end
+    @tag :integration
+    test "should not allow user account registration when the same handle name and primary email address already exist" do
+      assert {:ok, _} =
+               AppAccounts.register_app_account(%{
+                                                  is_org: false,
+                                                  handle_name: "meow",
+                                                  email: "meow@gmail.com",
+                                                })
+      assert {:error,
+                %{
+                  email: ["has already been taken"],
+                  handle_name: ["has already been taken"],
+                }} =
+               AppAccounts.register_app_account(%{
+                                                  is_org: false,
+                                                  handle_name: "meow",
+                                                  email: "meow@gmail.com",
+                                                })
+    end
+  end
+  describe "update an app account" do
+    test "should not allow organization account to be tagged as contributor" do
+      assert {:ok, %AppAccount{} = user_account} =
+               AppAccounts.register_app_account(%{
+                                                  is_org: false,
+                                                  handle_name: "meow",
+                                                  email: "meow@gmail.com",
+                                                })
+      assert {:ok, %AppAccount{} = org_account} =
+               AppAccounts.register_app_account(%{
+                                                  is_org: true,
+                                                  handle_name: "meow_org",
+                                                  email: "meow@meow.com",
+                                                  org_owner_app_account_uuid: user_account.uuid,
+                                                })
+      assert {:error,
+                %{app_account: ["organization cannot be a contributor"]}} =
+               AppAccounts.update_app_account(org_account,
+                                              %{is_contributor: true})
+    end
+    test "should not allow organization account to be tagged as employee" do
+      assert {:ok, %AppAccount{} = user_account} =
+               AppAccounts.register_app_account(%{
+                                                  is_org: false,
+                                                  handle_name: "meow",
+                                                  email: "meow@gmail.com",
+                                                })
+      assert {:ok, %AppAccount{} = org_account} =
+               AppAccounts.register_app_account(%{
+                                                  is_org: true,
+                                                  handle_name: "meow_org",
+                                                  email: "meow@meow.com",
+                                                  org_owner_app_account_uuid: user_account.uuid,
+                                                })
+      assert {:error, %{app_account: ["organization cannot be an employee"]}} =
+               AppAccounts.update_app_account(org_account, %{is_employee: true})
+    end
+    test "should not allow user account to have billing email" do
+      assert {:ok, %AppAccount{} = user_account} =
+               AppAccounts.register_app_account(%{
+                                                  is_org: false,
+                                                  handle_name: "meow",
+                                                  email: "meow@gmail.com",
+                                                })
+      assert {:error,
+                %{app_account: ["user account does not have billing email"]}} =
+               AppAccounts.update_app_account(user_account,
+                                              %{
+                                                new_billing_email: "fake@gmail.com",
+                                              })
+    end
+    test "should not allow organization account to have primary email" do
+      assert {:ok, %AppAccount{} = user_account} =
+               AppAccounts.register_app_account(%{
+                                                  is_org: false,
+                                                  handle_name: "meow",
+                                                  email: "meow@gmail.com",
+                                                })
+      assert {:ok, %AppAccount{} = org_account} =
+               AppAccounts.register_app_account(%{
+                                                  is_org: true,
+                                                  handle_name: "meow_org",
+                                                  email: "meow@meow.com",
+                                                  org_owner_app_account_uuid: user_account.uuid,
+                                                })
+      assert {:error,
+                %{
+                  app_account: [
+                    "organization account does not have primary email",
+                  ],
+                }} =
+               AppAccounts.update_app_account(org_account,
+                                              %{
+                                                primary_email: "fake@gmail.com",
+                                              })
+    end
   end
 end

@@ -20,7 +20,7 @@ defmodule Plustwo.Infrastructure.Validation.Middlewares.Validate do
     errors = command |> Vex.errors() |> merge_errors()
 
     pipeline
-    |> respond({:error, :validation_failure, errors})
+    |> respond({:error, errors})
     |> halt()
   end
 

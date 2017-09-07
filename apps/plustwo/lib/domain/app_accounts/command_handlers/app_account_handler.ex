@@ -61,7 +61,8 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
       &contributor_status_updated/2,
       &primary_email_updated/2,
       &primary_email_verified/2,
-      &billing_email_updated/2,
+      &billing_email_added/2,
+      &billing_email_removed/2,
     ]
     Enum.reduce fns, [], fn change, events -> case change.(user, update) do
                     nil ->
@@ -76,9 +77,6 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
   end
 
 
-  ##########
-  # Private helpers
-  ##########
   defp handle_name_changed(%AppAccount{},
                            %UpdateAppAccount{handle_name: nil}) do
     nil
@@ -163,7 +161,7 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
 
   defp employee_status_updated(%AppAccount{is_org: true},
                                %UpdateAppAccount{is_employee: _}) do
-    {:error, "organization cannot be an employee"}
+    {:error, %{app_account: ["organization cannot be an employee"]}}
   end
 
   defp employee_status_updated(%AppAccount{is_employee: is_employee},
@@ -194,7 +192,7 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
 
   defp contributor_status_updated(%AppAccount{is_org: true},
                                   %UpdateAppAccount{is_contributor: _}) do
-    {:error, "organization cannot be a contributor"}
+    {:error, %{app_account: ["organization cannot be a contributor"]}}
   end
 
   defp contributor_status_updated(%AppAccount{is_contributor: is_contributor},
@@ -225,7 +223,8 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
 
   defp primary_email_updated(%AppAccount{is_org: true},
                              %UpdateAppAccount{primary_email: _}) do
-    {:error, "organization account does not have primary email"}
+    {:error,
+     %{app_account: ["organization account does not have primary email"]}}
   end
 
   defp primary_email_updated(%AppAccount{uuid: uuid},
@@ -248,14 +247,18 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
 
   defp primary_email_verified(%AppAccount{is_org: true},
                               %UpdateAppAccount{primary_email_verification_code: _}) do
-    {:error, "organization account does not have primary email"}
+    {:error,
+     %{app_account: ["organization account does not have primary email"]}}
   end
 
   defp primary_email_verified(%AppAccount{uuid: uuid},
                               %UpdateAppAccount{primary_email_verification_code: primary_email_verification_code}) do
-    case EmailVerification.get_code_hash(%{app_account_uuid: uuid, email_type: 0}) do
+    case EmailVerification.get_code_hash(%{
+                                           app_account_uuid: uuid,
+                                           email_type: 0,
+                                         }) do
       nil ->
-        {:error, "unable to verify email verification code"}
+        {:error, %{app_account: ["unable to verify primary email"]}}
 
       email_verification_code_hash ->
         if Crypto.verify(primary_email_verification_code,
@@ -264,48 +267,49 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
           %AppAccountPrimaryEmailVerified{uuid: uuid,
                                           is_primary_email_verified: true}
         else
-          {:error, "invalid email verification code"}
+          {:error, %{app_account: ["invalid primary email verification code"]}}
         end
     end
   end
 
 
-  defp billing_email_updated(%AppAccount{},
-                             %UpdateAppAccount{new_billing_email: nil}) do
+  defp billing_email_added(%AppAccount{},
+                           %UpdateAppAccount{new_billing_email: nil}) do
     nil
   end
 
-  defp billing_email_updated(%AppAccount{},
-                             %UpdateAppAccount{new_billing_email: ""}) do
+  defp billing_email_added(%AppAccount{},
+                           %UpdateAppAccount{new_billing_email: ""}) do
     nil
   end
 
-  defp billing_email_updated(%AppAccount{},
+  defp billing_email_added(%AppAccount{is_org: false},
+                           %UpdateAppAccount{new_billing_email: _}) do
+    {:error, %{app_account: ["user account does not have billing email"]}}
+  end
+
+  defp billing_email_added(%AppAccount{uuid: uuid},
+                           %UpdateAppAccount{new_billing_email: new_billing_email}) do
+    %AppAccountBillingEmailAdded{uuid: uuid, billing_email: new_billing_email}
+  end
+
+
+  defp billing_email_removed(%AppAccount{},
                              %UpdateAppAccount{remove_billing_email: nil}) do
     nil
   end
 
-  defp billing_email_updated(%AppAccount{},
+  defp billing_email_removed(%AppAccount{},
                              %UpdateAppAccount{remove_billing_email: ""}) do
     nil
   end
 
-  defp billing_email_updated(%AppAccount{is_org: false},
-                             %UpdateAppAccount{new_billing_email: _}) do
-    {:error, "user account does not have billing email"}
-  end
-
-  defp billing_email_updated(%AppAccount{is_org: false},
+  defp billing_email_removed(%AppAccount{is_org: false},
                              %UpdateAppAccount{remove_billing_email: _}) do
-    {:error, "user_account does not have billing email"}
+    {:error, %{app_account: ["user account does not have billing email"]}}
   end
 
-  defp billing_email_updated(%AppAccount{uuid: uuid},
-                             %UpdateAppAccount{new_billing_email: new_billing_email}) do
-    %AppAccountBillingEmailAdded{uuid: uuid, billing_email: new_billing_email}
-  end
-
-  defp billing_email_updated(%AppAccount{uuid: uuid},
+  defp billing_email_removed(%AppAccount{uuid: uuid},
                              %UpdateAppAccount{remove_billing_email: remove_billing_email}) do
     %AppAccountBillingEmailRemoved{uuid: uuid,
                                    billing_email: remove_billing_email}

@@ -56,6 +56,8 @@ defmodule Plustwo.Domain.AppAccounts do
       |> UpdateAppAccount.new()
       |> UpdateAppAccount.assign_uuid(app_account_uuid)
       |> UpdateAppAccount.downcase_handle_name()
+      |> UpdateAppAccount.downcase_new_billing_email()
+      |> UpdateAppAccount.downcase_remove_billing_email()
     with {:ok, version} <-
            Router.dispatch(command, include_aggregate_version: true) do
       Notifications.wait_for AppAccount, app_account_uuid, version

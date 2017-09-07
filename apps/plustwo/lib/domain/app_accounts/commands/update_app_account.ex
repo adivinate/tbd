@@ -79,4 +79,29 @@ defmodule Plustwo.Domain.AppAccounts.Commands.UpdateAppAccount do
     %UpdateAppAccount{app_account |
                       primary_email: String.downcase(primary_email)}
   end
+
+
+  @doc "Downcases app account new billing email."
+  def downcase_new_billing_email(%UpdateAppAccount{new_billing_email: nil} =
+                                   app_account) do
+    app_account
+  end
+
+  def downcase_new_billing_email(%UpdateAppAccount{new_billing_email: new_billing_email} =
+                                   app_account) do
+    %UpdateAppAccount{app_account |
+                      new_billing_email: String.downcase(new_billing_email)}
+  end
+
+  @doc "Downcases app account remove billing email."
+  def downcase_remove_billing_email(%UpdateAppAccount{remove_billing_email: nil} =
+                                   app_account) do
+    app_account
+  end
+
+  def downcase_remove_billing_email(%UpdateAppAccount{remove_billing_email: remove_billing_email} =
+                                   app_account) do
+    %UpdateAppAccount{app_account |
+                      remove_billing_email: String.downcase(remove_billing_email)}
+  end
 end
