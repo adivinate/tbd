@@ -55,4 +55,8 @@ defmodule Plustwo.Domain.AppUsers.Validators.WithinRangeBirthdateDay do
         {:error, "not within range"}
     end
   end
+
+  def validate(_value, _context) do
+    {:error, "invalid birthdate month"}
+  end
 end

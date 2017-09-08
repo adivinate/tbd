@@ -16,12 +16,6 @@ defmodule Plustwo.Domain.AppUsers.Queries.AppUserQuery do
   end
 
 
-  def by_handle_name(handle_name) do
-    where = [handle_name: handle_name]
-    app_user_query where
-  end
-
-
   def by_app_account_uuid(app_account_uuid) do
     where = [app_account_uuid: app_account_uuid]
     app_user_query where

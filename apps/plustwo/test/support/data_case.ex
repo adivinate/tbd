@@ -10,13 +10,13 @@ defmodule Plustwo.DataCase do
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
+      import Plustwo.Factory
+      import Plustwo.Fixture
       import Plustwo.DataCase
     end
   end
-
-  setup tags do
+  setup _tags do
     Plustwo.Storage.reset!()
-
     :ok
   end
 end

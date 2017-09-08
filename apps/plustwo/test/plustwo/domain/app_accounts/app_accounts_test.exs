@@ -28,7 +28,7 @@ defmodule Plustwo.Domain.AppAccounts.AppAccountsTest do
                AppAccounts.register_app_account(%{
                                                   is_org: true,
                                                   handle_name: "meow_org",
-                                                  billing_email: "meow@meow.com",
+                                                  billing_email: "meow@meow.org",
                                                 })
       assert org_account.handle_name == "meow_org"
       assert org_account.is_activated == false
@@ -93,48 +93,52 @@ defmodule Plustwo.Domain.AppAccounts.AppAccountsTest do
     end
   end
   describe "update an app account" do
+    @tag :integration
     test "should not allow organization account to be tagged as contributor" do
       assert {:ok, %AppAccount{} = org_account} =
                AppAccounts.register_app_account(%{
                                                   is_org: true,
                                                   handle_name: "meow_org",
-                                                  billing_email: "meow@meow.com",
+                                                  billing_email: "meow@meow.org",
                                                 })
       assert {:error,
                 %{app_account: ["organization cannot be a contributor"]}} =
                AppAccounts.update_app_account(org_account,
                                               %{is_contributor: true})
     end
+    @tag :integration
     test "should not allow organization account to be tagged as employee" do
       assert {:ok, %AppAccount{} = org_account} =
                AppAccounts.register_app_account(%{
                                                   is_org: true,
                                                   handle_name: "meow_org",
-                                                  billing_email: "meow@meow.com",
+                                                  billing_email: "meow@meow.org",
                                                 })
       assert {:error, %{app_account: ["organization cannot be an employee"]}} =
                AppAccounts.update_app_account(org_account, %{is_employee: true})
     end
+    @tag :integration
     test "should not allow user account to have billing email" do
       assert {:ok, %AppAccount{} = user_account} =
                AppAccounts.register_app_account(%{
                                                   is_org: false,
                                                   handle_name: "meow",
-                                                  primary_email: "meow@gmail.com",
+                                                  primary_email: "meow@gmail.org",
                                                 })
       assert {:error,
                 %{app_account: ["user account does not have billing email"]}} =
                AppAccounts.update_app_account(user_account,
                                               %{
-                                                new_billing_email: "fake@gmail.com",
+                                                new_billing_email: "fake@gmail.org",
                                               })
     end
+    @tag :integration
     test "should not allow organization account to have primary email" do
       assert {:ok, %AppAccount{} = org_account} =
                AppAccounts.register_app_account(%{
                                                   is_org: true,
                                                   handle_name: "meow_org",
-                                                  billing_email: "meow@meow.com",
+                                                  billing_email: "meow@meow.org",
                                                 })
       assert {:error,
                 %{
@@ -143,9 +147,7 @@ defmodule Plustwo.Domain.AppAccounts.AppAccountsTest do
                   ],
                 }} =
                AppAccounts.update_app_account(org_account,
-                                              %{
-                                                primary_email: "fake@gmail.com",
-                                              })
+                                              %{primary_email: "woof@woof.org"})
     end
   end
 end

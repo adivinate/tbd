@@ -12,7 +12,7 @@ defmodule Plustwo.Domain.AppUsers.Validators.WithinRangeBirthdateYear do
   end
 
   def validate(value, _context) do
-    end_year = DateTime.utc_now()
+    end_year = DateTime.utc_now.year
     start_year = end_year - 120
     case value in start_year..end_year do
       true ->
