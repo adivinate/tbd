@@ -10,10 +10,10 @@ defmodule Plustwo.Domain.AppOrgs.Workflows.CreateAppOrgFromAppAccountTest do
   describe "an app org" do
     setup [:create_org_app_account]
     @tag :integration
-    test "should be created when a new organization app account is registered" do
+    test "should be created when a new organization app account is registered", %{org_app_account: org_app_account} do
       assert_receive_event AppOrgCreated,
                            fn event ->
-                             assert(event.app_account_uuid == app_account.uuid)
+                             assert(event.app_account_uuid == org_app_account.uuid)
                            end
     end
   end

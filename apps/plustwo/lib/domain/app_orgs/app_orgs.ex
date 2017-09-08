@@ -8,27 +8,7 @@ defmodule Plustwo.Domain.AppOrgs do
   alias Plustwo.Domain.AppOrgs.Notifications
   alias Plustwo.Domain.AppOrgs.Schemas.AppOrg
   alias Plustwo.Domain.AppOrgs.Queries.{AppOrgQuery, AppOrgMemberQuery}
-  alias Plustwo.Domain.AppOrgs.Commands.{CreateAppOrg,
-                                         UpdateAppOrgMember,
-                                         UpdateAppOrg}
-
-  @doc "Creates an app organization on Plustwo."
-  def create_app_org(attrs \\ %{}) do
-    app_org_uuid = UUID.uuid4()
-    command =
-      attrs
-      |> CreateAppOrg.new()
-      |> CreateAppOrg.assign_app_org_uuid(app_org_uuid)
-      |> CreateAppOrg.assign_app_account_uuid(attrs.app_account_uuid)
-    with {:ok, version} <-
-           Router.dispatch(command, include_aggregate_version: true) do
-      Notifications.wait_for AppOrg, app_org_uuid, version
-    else
-      reply ->
-        reply
-    end
-  end
-
+  alias Plustwo.Domain.AppOrgs.Commands.{UpdateAppOrgMember, UpdateAppOrg}
 
   @doc "Updates metadata of an app organization."
   def update_app_org(%AppOrg{uuid: app_org_uuid}, attrs \\ %{}) do
