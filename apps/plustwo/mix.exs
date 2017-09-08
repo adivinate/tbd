@@ -81,6 +81,7 @@ defmodule Plustwo.Mixfile do
       {:eventstore, "~> 0.9.0"},
       {:ex_twilio, "~> 0.4.0"},
       {:exconstructor, "~> 1.1.0"},
+      {:ex_machina, "~> 2.1.0", only: :test},
       {:httpoison, "~> 0.12.0", [override: true]},
       {:phoenix, "~> 1.3.0"},
       {:phoenix_ecto, "~> 3.2.3"},
