@@ -3,6 +3,8 @@ defmodule Plustwo.DataCase do
 
   use ExUnit.CaseTemplate
 
+  alias Plustwo.Storage
+
   using do
     quote do
       alias Plustwo.Infrastructure.Repo.Postgres
@@ -16,7 +18,7 @@ defmodule Plustwo.DataCase do
     end
   end
   setup _tags do
-    Plustwo.Storage.reset!()
+    Storage.reset!()
     :ok
   end
 end

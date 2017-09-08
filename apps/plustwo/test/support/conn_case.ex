@@ -3,6 +3,9 @@ defmodule Plustwo.Application.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  alias Plustwo.Storage
+  alias Phoenix.ConnTest
+
   using do
     quote do
       # Import conveniences for testing with connections
@@ -15,7 +18,7 @@ defmodule Plustwo.Application.ConnCase do
     end
   end
   setup _tags do
-    Plustwo.Storage.reset!()
-    {:ok, [conn: Phoenix.ConnTest.build_conn()]}
+    Storage.reset!()
+    {:ok, [conn: ConnTest.build_conn()]}
   end
 end

@@ -12,6 +12,6 @@ defmodule Plustwo.Factory do
 
 
   def org_app_account_factory do
-    %{is_org: true, handle_name: "meow_org", primary_email: "meow@meow.org"}
+    %{is_org: true, handle_name: "meow_org", billing_email: "meow@meow.org"}
   end
 end

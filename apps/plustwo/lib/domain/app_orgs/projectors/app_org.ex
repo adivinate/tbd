@@ -3,6 +3,7 @@ defmodule Plustwo.Domain.AppOrgs.Projectors.AppOrg do
 
   use Commanded.Projections.Ecto, name: "AppOrgs.Projectors.AppOrg"
 
+  alias Ecto.Multi
   alias Plustwo.Domain.AppOrgs.Notifications
   alias Plustwo.Domain.AppOrgs.Schemas.{AppOrg, AppOrgMember}
   alias Plustwo.Domain.AppOrgs.Queries.{AppOrgQuery, AppOrgMemberQuery}
@@ -49,11 +50,11 @@ defmodule Plustwo.Domain.AppOrgs.Projectors.AppOrg do
   project %AppOrgCreated{app_org_uuid: app_org_uuid,
                          app_account_uuid: app_account_uuid},
           %{stream_version: stream_version} do
-    Ecto.Multi.insert multi,
-                      :app_org,
-                      %AppOrg{uuid: app_org_uuid,
-                              version: stream_version,
-                              app_account_uuid: app_account_uuid}
+    Multi.insert multi,
+                 :app_org,
+                 %AppOrg{uuid: app_org_uuid,
+                         version: stream_version,
+                         app_account_uuid: app_account_uuid}
   end
   project %AppOrgMemberMarkedAsAdmin{app_org_uuid: app_org_uuid,
                                      member_app_account_uuid: member_app_account_uuid},
@@ -112,11 +113,11 @@ defmodule Plustwo.Domain.AppOrgs.Projectors.AppOrg do
   project %AppOrgMemberRemoved{app_org_uuid: app_org_uuid,
                                member_app_account_uuid: member_app_account_uuid},
           _metadata do
-    Ecto.Multi.delete_all multi,
-                          :app_org_member,
-                          AppOrgMemberQuery.by_app_org_uuid(app_org_uuid,
-                                                            member_app_account_uuid),
-                          returning: true
+    Multi.delete_all multi,
+                     :app_org_member,
+                     AppOrgMemberQuery.by_app_org_uuid(app_org_uuid,
+                                                       member_app_account_uuid),
+                     returning: true
   end
   project %AppOrgMembershipSetPrivate{app_org_uuid: app_org_uuid,
                                       member_app_account_uuid: member_app_account_uuid},
@@ -139,15 +140,15 @@ defmodule Plustwo.Domain.AppOrgs.Projectors.AppOrg do
   project %NewAppOrgMemberAdded{app_org_uuid: app_org_uuid,
                                 new_member_app_account_uuid: new_member_app_account_uuid},
           %{stream_version: stream_version} do
-    Ecto.Multi.insert multi,
-                      :app_org_member,
-                      %AppOrgMember{app_org_uuid: app_org_uuid,
-                                    version: stream_version,
-                                    app_account_uuid: new_member_app_account_uuid,
-                                    is_owner: false,
-                                    is_representative: false,
-                                    is_admin: false,
-                                    is_membership_visible_to_public: false}
+    Multi.insert multi,
+                 :app_org_member,
+                 %AppOrgMember{app_org_uuid: app_org_uuid,
+                               version: stream_version,
+                               app_account_uuid: new_member_app_account_uuid,
+                               is_owner: false,
+                               is_representative: false,
+                               is_admin: false,
+                               is_membership_visible_to_public: false}
   end
   def after_update(_event, _metadata, changes) do
     Notifications.publish_changes changes
@@ -158,11 +159,11 @@ defmodule Plustwo.Domain.AppOrgs.Projectors.AppOrg do
                       app_org_uuid,
                       %{stream_version: stream_version},
                       changes) do
-    Ecto.Multi.update_all multi,
-                          :app_org,
-                          AppOrgQuery.by_uuid(app_org_uuid),
-                          [set: changes ++ [version: stream_version]],
-                          returning: true
+    Multi.update_all multi,
+                     :app_org,
+                     AppOrgQuery.by_uuid(app_org_uuid),
+                     [set: changes ++ [version: stream_version]],
+                     returning: true
   end
 
 
@@ -171,11 +172,11 @@ defmodule Plustwo.Domain.AppOrgs.Projectors.AppOrg do
                              app_account_uuid,
                              %{stream_version: stream_version},
                              changes) do
-    Ecto.Multi.update_all multi,
-                          :app_org_member,
-                          AppOrgMemberQuery.by_app_org_uuid(app_org_uuid,
-                                                            app_account_uuid),
-                          [set: changes ++ [version: stream_version]],
-                          returning: true
+    Multi.update_all multi,
+                     :app_org_member,
+                     AppOrgMemberQuery.by_app_org_uuid(app_org_uuid,
+                                                       app_account_uuid),
+                     [set: changes ++ [version: stream_version]],
+                     returning: true
   end
 end

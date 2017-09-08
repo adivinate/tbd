@@ -3,12 +3,21 @@ defmodule Plustwo.Infrastructure.Validation.Validators.PhoneNumber do
 
   use Vex.Validator
 
-  def validate(nil, _options), do: :ok
-  def validate("", _options), do: :ok
+  def validate(nil, _options) do
+    :ok
+  end
+
+  def validate("", _options) do
+    :ok
+  end
+
   def validate(value, _options) do
     case Regex.match?(~r/^[+][0-9]+$/, value) do
-      true -> :ok
-      false -> {:error, "incorrect E.164 phone number format"}
+      true ->
+        :ok
+
+      false ->
+        {:error, "incorrect E.164 phone number format"}
     end
   end
 end

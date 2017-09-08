@@ -1,25 +1,28 @@
 defmodule Plustwo.Infrastructure.Repo.RedisPool do
-  @moduledoc """
-  An interface to interact with a pool of Redis.
-  """
+  @moduledoc "An interface to interact with a pool of Redis."
 
   use Supervisor
 
   @pool_size 20
   @host Application.get_env(:redis, :host)
   @port Application.get_env(:redis, :port)
-
   def start_link do
-    Supervisor.start_link(__MODULE__, [])
+    Supervisor.start_link __MODULE__, []
   end
+
 
   def init([]) do
-    redix_workers = for i <- 0..(@pool_size - 1) do
-      worker(Redix, [[host: @host, port: @port], [name: :"redix_#{i}"]], id: {Redix, i})
-    end
-
-    supervise(redix_workers, strategy: :one_for_one, name: __MODULE__)
+    redix_workers = for i <- 0..@pool_size - 1 do
+        worker Redix,
+               [
+                 [host: @host, port: @port],
+                 [name: :erlang.binary_to_atom("redix_#{i}", :utf8)],
+               ],
+               id: {Redix, i}
+      end
+    supervise redix_workers, strategy: :one_for_one, name: __MODULE__
   end
+
 
   @doc """
   This is just a wrapper around Redix's `command`.
@@ -41,10 +44,12 @@ defmodule Plustwo.Infrastructure.Repo.RedisPool do
 
   """
   def command(command) do
-    Redix.command(:"redix_#{random_index()}", command)
+    Redix.command :erlang.binary_to_atom("redix_#{random_index()}", :utf8),
+                  command
   end
 
-  defp random_index() do
-    rem(System.unique_integer([:positive]), @pool_size)
+
+  defp random_index do
+    rem System.unique_integer([:positive]), @pool_size
   end
 end

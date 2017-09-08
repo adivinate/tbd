@@ -3,8 +3,14 @@ defmodule Plustwo.Infrastructure.Validation.Validators.Date do
 
   use Vex.Validator
 
-  def validate(nil, _options), do: :ok
-  def validate("", _options), do: :ok
+  def validate(nil, _options) do
+    :ok
+  end
+
+  def validate("", _options) do
+    :ok
+  end
+
   def validate(value, _options) do
     :ok
   end

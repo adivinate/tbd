@@ -8,10 +8,9 @@ matrix:
         postgresql: "9.6"
       before_script:
         - mix deps.get
-        - mix deps.compile
-      script:
-        - mix credo
         - cd apps/plustwo
         - MIX_ENV=test mix event_store.create
         - cd ../..
+      script:
         - mix test
+        - mix credo --strict

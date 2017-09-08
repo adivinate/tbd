@@ -3,9 +3,17 @@ defmodule Plustwo.Infrastructure.Validation.Validators.String do
 
   use Vex.Validator
 
-  def validate(nil, _options), do: :ok
-  def validate("", _options), do: :ok
+  alias Vex.Validators.By
+
+  def validate(nil, _options) do
+    :ok
+  end
+
+  def validate("", _options) do
+    :ok
+  end
+
   def validate(value, _options) do
-    Vex.Validators.By.validate(value, [function: &String.valid?/1])
+    By.validate value, function: &String.valid?/1
   end
 end

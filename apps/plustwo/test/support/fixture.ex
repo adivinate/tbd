@@ -26,12 +26,14 @@ defmodule Plustwo.Fixture do
 
 
   def fixture(:org_app_account) do
-    build(:org_app_account)
+    :org_app_account
+    |> build()
     |> AppAccounts.register_app_account()
   end
 
   def fixture(:user_app_account) do
-    build(:user_app_account)
+    :user_app_account
+    |> build()
     |> AppAccounts.register_app_account()
   end
 end

@@ -3,6 +3,7 @@ defmodule Plustwo.Domain.AppUsers.Projectors.AppUser do
 
   use Commanded.Projections.Ecto, name: "AppUsers.Projectors.AppUser"
 
+  alias Ecto.Multi
   alias Plustwo.Domain.AppUsers.Notifications
   alias Plustwo.Domain.AppUsers.Schemas.AppUser
   alias Plustwo.Domain.AppUsers.Queries.AppUserQuery
@@ -19,11 +20,11 @@ defmodule Plustwo.Domain.AppUsers.Projectors.AppUser do
                     birthdate_year: updated.birthdate_year
   end
   project %AppUserCreated{} = created, %{stream_version: version} do
-    Ecto.Multi.insert multi,
-                      :app_user,
-                      %AppUser{uuid: created.app_user_uuid,
-                               version: version,
-                               app_account_uuid: created.app_account_uuid}
+    Multi.insert multi,
+                 :app_user,
+                 %AppUser{uuid: created.app_user_uuid,
+                          version: version,
+                          app_account_uuid: created.app_account_uuid}
   end
   project %AppUserNameUpdated{} = updated, metadata do
     update_app_user multi,
@@ -41,10 +42,10 @@ defmodule Plustwo.Domain.AppUsers.Projectors.AppUser do
 
 
   defp update_app_user(multi, app_user_uuid, metadata, changes) do
-    Ecto.Multi.update_all multi,
-                          :app_user,
-                          AppUserQuery.by_uuid(app_user_uuid),
-                          [set: changes ++ [version: metadata.stream_version]],
-                          returning: true
+    Multi.update_all multi,
+                     :app_user,
+                     AppUserQuery.by_uuid(app_user_uuid),
+                     [set: changes ++ [version: metadata.stream_version]],
+                     returning: true
   end
 end
