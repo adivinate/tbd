@@ -89,6 +89,14 @@ defmodule Plustwo.Domain.AppOrgs do
   end
 
 
+  @doc "Retrieves an app organization by app account UUID, or return `nil` if not found."
+  def get_app_org_by_app_account_uuid(app_account_uuid) do
+    app_account_uuid
+    |> AppOrgQuery.by_app_account_uuid()
+    |> Postgres.one()
+  end
+
+
   @doc "Retrieves an app organization member, or return `nil` if not found."
   def get_app_org_member(app_org_uuid, app_account_uuid) do
     app_org_uuid

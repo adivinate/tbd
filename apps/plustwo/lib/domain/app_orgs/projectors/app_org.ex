@@ -31,7 +31,7 @@ defmodule Plustwo.Domain.AppOrgs.Projectors.AppOrg do
                    app_org_uuid,
                    metadata,
                    name: name,
-                   start_date: start_date,
+                   #start_date: start_date,
                    mission: mission,
                    description: description
   end
