@@ -4,8 +4,8 @@ defmodule Plustwo.Infrastructure.Repo.RedisPool do
   use Supervisor
 
   @pool_size 20
-  @host Application.get_env(:redis, :host)
-  @port Application.get_env(:redis, :port)
+  @host Application.get_env(:plustwo, :redis_host)
+  @port Application.get_env(:plustwo, :redis_port)
   def start_link do
     Supervisor.start_link __MODULE__, []
   end

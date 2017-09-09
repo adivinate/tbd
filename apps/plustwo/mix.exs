@@ -91,7 +91,7 @@ defmodule Plustwo.Mixfile do
       {:quantum, "~> 2.1.0-beta.1"},
       {:recaptcha, [github: "samueljseay/recaptcha"]},
       {:redix, "~> 0.6.1"},
-      {:stripity_stripe, "~> 2.0.0-alpha.10"},
+      {:stripity_stripe, "~> 1.6.0"},
       {:uuid, "~> 1.1.7"},
       {:vex, [github: "CargoSense/vex"]},
     ]
