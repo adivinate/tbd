@@ -26,9 +26,8 @@ defmodule Plustwo.Domain.AppAccounts.Aggregates.AppAccount do
                                            AppAccountSuspended,
                                            AppAccountSuspensionLifted}
 
-  def apply(%AppAccount{} = app_account,
-            %AppAccountActivated{is_activated: is_activated}) do
-    %AppAccount{app_account | is_activated: is_activated}
+  def apply(%AppAccount{} = app_account, %AppAccountActivated{}) do
+    %AppAccount{app_account | is_activated: true}
   end
 
   def apply(%AppAccount{} = app_account,
@@ -50,9 +49,8 @@ defmodule Plustwo.Domain.AppAccounts.Aggregates.AppAccount do
                                       current_billing_email)}
   end
 
-  def apply(%AppAccount{} = app_account,
-            %AppAccountDeactivated{is_activated: is_activated}) do
-    %AppAccount{app_account | is_activated: is_activated}
+  def apply(%AppAccount{} = app_account, %AppAccountDeactivated{}) do
+    %AppAccount{app_account | is_activated: false}
   end
 
   def apply(%AppAccount{} = app_account,
@@ -60,24 +58,20 @@ defmodule Plustwo.Domain.AppAccounts.Aggregates.AppAccount do
     %AppAccount{app_account | handle_name: handle_name}
   end
 
-  def apply(%AppAccount{} = app_account,
-            %AppAccountMarkedAsContributor{is_contributor: is_contributor}) do
-    %AppAccount{app_account | is_contributor: is_contributor}
+  def apply(%AppAccount{} = app_account, %AppAccountMarkedAsContributor{}) do
+    %AppAccount{app_account | is_contributor: true}
   end
 
-  def apply(%AppAccount{} = app_account,
-            %AppAccountMarkedAsEmployee{is_employee: is_employee}) do
-    %AppAccount{app_account | is_employee: is_employee}
+  def apply(%AppAccount{} = app_account, %AppAccountMarkedAsEmployee{}) do
+    %AppAccount{app_account | is_employee: true}
   end
 
-  def apply(%AppAccount{} = app_account,
-            %AppAccountMarkedAsNonContributor{is_contributor: is_contributor}) do
-    %AppAccount{app_account | is_contributor: is_contributor}
+  def apply(%AppAccount{} = app_account, %AppAccountMarkedAsNonContributor{}) do
+    %AppAccount{app_account | is_contributor: false}
   end
 
-  def apply(%AppAccount{} = app_account,
-            %AppAccountMarkedAsNonEmployee{is_employee: is_employee}) do
-    %AppAccount{app_account | is_employee: is_employee}
+  def apply(%AppAccount{} = app_account, %AppAccountMarkedAsNonEmployee{}) do
+    %AppAccount{app_account | is_employee: false}
   end
 
   def apply(%AppAccount{emails: emails} = app_account,
@@ -88,7 +82,7 @@ defmodule Plustwo.Domain.AppAccounts.Aggregates.AppAccount do
                                                      %{
                                                        current_primary_email |
                                                        address: updated.email_address,
-                                                       is_verified: updated.is_verified,
+                                                       is_verified: false,
                                                      }
 
                                                    any ->
@@ -97,13 +91,13 @@ defmodule Plustwo.Domain.AppAccounts.Aggregates.AppAccount do
   end
 
   def apply(%AppAccount{emails: emails} = app_account,
-            %AppAccountPrimaryEmailVerified{} = verified) do
+            %AppAccountPrimaryEmailVerified{}) do
     %AppAccount{app_account | emails: MapSet.new(emails, fn
                                                    %{type: 0} =
                                                         current_primary_email ->
                                                      %{
                                                        current_primary_email |
-                                                       is_verified: verified.is_verified,
+                                                       is_verified: true,
                                                      }
 
                                                    any ->
@@ -129,13 +123,11 @@ defmodule Plustwo.Domain.AppAccounts.Aggregates.AppAccount do
                                    })}
   end
 
-  def apply(%AppAccount{} = app_account,
-            %AppAccountSuspended{is_suspended: is_suspended}) do
-    %AppAccount{app_account | is_suspended: is_suspended}
+  def apply(%AppAccount{} = app_account, %AppAccountSuspended{}) do
+    %AppAccount{app_account | is_suspended: true}
   end
 
-  def apply(%AppAccount{} = app_account,
-            %AppAccountSuspensionLifted{is_suspended: is_suspended}) do
-    %AppAccount{app_account | is_suspended: is_suspended}
+  def apply(%AppAccount{} = app_account, %AppAccountSuspensionLifted{}) do
+    %AppAccount{app_account | is_suspended: false}
   end
 end

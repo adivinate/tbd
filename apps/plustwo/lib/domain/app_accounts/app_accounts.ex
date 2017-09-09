@@ -32,7 +32,7 @@ defmodule Plustwo.Domain.AppAccounts do
 
   @doc "Updates an app account."
   def update_app_account(%AppAccount{uuid: app_account_uuid},
-                         %{primary_email: primary_email} = attrs) do
+                         %{primary_email: _} = attrs) do
     command =
       attrs
       |> UpdateAppAccount.new()
@@ -42,7 +42,27 @@ defmodule Plustwo.Domain.AppAccounts do
            Router.dispatch(command, include_aggregate_version: true) do
       Notifications.wait_for AppAccountEmail,
                              app_account_uuid,
-                             primary_email,
+                             0,
+                             version
+    else
+      reply ->
+        reply
+    end
+  end
+
+  def update_app_account(%AppAccount{uuid: app_account_uuid},
+                         %{
+                             primary_email_verification_code: _,
+                           } =
+                           attrs) do
+    command =
+      attrs
+      |> UpdateAppAccount.new()
+      |> UpdateAppAccount.assign_app_account_uuid(app_account_uuid)
+    with {:ok, version} <-
+           Router.dispatch(command, include_aggregate_version: true) do
+      Notifications.wait_for AppAccountEmail,
+                             app_account_uuid,
                              0,
                              version
     else
@@ -74,6 +94,7 @@ defmodule Plustwo.Domain.AppAccounts do
     app_account_uuid
     |> AppAccountQuery.by_uuid()
     |> Postgres.one()
+    |> Postgres.preload(:emails)
   end
 
 
@@ -83,6 +104,7 @@ defmodule Plustwo.Domain.AppAccounts do
     |> String.downcase()
     |> AppAccountQuery.by_handle_name()
     |> Postgres.one()
+    |> Postgres.preload(:emails)
   end
 
 

@@ -119,13 +119,12 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
 
   defp activation_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                  %UpdateAppAccount{is_activated: false}) do
-    %AppAccountDeactivated{app_account_uuid: app_account_uuid,
-                           is_activated: false}
+    %AppAccountDeactivated{app_account_uuid: app_account_uuid}
   end
 
   defp activation_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                  %UpdateAppAccount{is_activated: true}) do
-    %AppAccountActivated{app_account_uuid: app_account_uuid, is_activated: true}
+    %AppAccountActivated{app_account_uuid: app_account_uuid}
   end
 
 
@@ -146,13 +145,12 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
 
   defp suspension_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                  %UpdateAppAccount{is_suspended: false}) do
-    %AppAccountSuspensionLifted{app_account_uuid: app_account_uuid,
-                                is_suspended: false}
+    %AppAccountSuspensionLifted{app_account_uuid: app_account_uuid}
   end
 
   defp suspension_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                  %UpdateAppAccount{is_suspended: true}) do
-    %AppAccountSuspended{app_account_uuid: app_account_uuid, is_suspended: true}
+    %AppAccountSuspended{app_account_uuid: app_account_uuid}
   end
 
 
@@ -178,14 +176,12 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
 
   defp employee_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                %UpdateAppAccount{is_employee: true}) do
-    %AppAccountMarkedAsEmployee{app_account_uuid: app_account_uuid,
-                                is_employee: true}
+    %AppAccountMarkedAsEmployee{app_account_uuid: app_account_uuid}
   end
 
   defp employee_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                %UpdateAppAccount{is_employee: false}) do
-    %AppAccountMarkedAsNonEmployee{app_account_uuid: app_account_uuid,
-                                   is_employee: false}
+    %AppAccountMarkedAsNonEmployee{app_account_uuid: app_account_uuid}
   end
 
 
@@ -211,14 +207,12 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
 
   defp contributor_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                   %UpdateAppAccount{is_contributor: true}) do
-    %AppAccountMarkedAsContributor{app_account_uuid: app_account_uuid,
-                                   is_contributor: true}
+    %AppAccountMarkedAsContributor{app_account_uuid: app_account_uuid}
   end
 
   defp contributor_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
                                   %UpdateAppAccount{is_contributor: false}) do
-    %AppAccountMarkedAsNonContributor{app_account_uuid: app_account_uuid,
-                                      is_contributor: false}
+    %AppAccountMarkedAsNonContributor{app_account_uuid: app_account_uuid}
   end
 
 
@@ -241,8 +235,7 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
   defp primary_email_updated(%AppAccount{app_account_uuid: app_account_uuid},
                              %UpdateAppAccount{primary_email: primary_email}) do
     %AppAccountPrimaryEmailUpdated{app_account_uuid: app_account_uuid,
-                                   email_address: primary_email,
-                                   is_verified: false}
+                                   email_address: primary_email}
   end
 
 
@@ -275,8 +268,7 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
         if Crypto.verify(primary_email_verification_code,
                          email_verification_code_hash,
                          :bcrypt) do
-          %AppAccountPrimaryEmailVerified{app_account_uuid: app_account_uuid,
-                                          is_verified: true}
+          %AppAccountPrimaryEmailVerified{app_account_uuid: app_account_uuid}
         else
           {:error, %{app_account: ["invalid primary email verification code"]}}
         end

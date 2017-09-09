@@ -15,6 +15,11 @@ defmodule Plustwo.Domain.AppAccounts.Queries.AppAccountEmailQuery do
     app_account_email_query where
   end
 
+  def by_app_account_uuid(app_account_uuid, email_type, version) do
+    where = [app_account_uuid: app_account_uuid, type: email_type, version: version]
+    app_account_email_query where
+  end
+
   def by_app_account_uuid(app_account_uuid,
                           email_address,
                           email_type,

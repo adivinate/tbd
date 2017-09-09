@@ -92,62 +92,113 @@ defmodule Plustwo.Domain.AppAccounts.AppAccountsTest do
                                                 })
     end
   end
-  describe "update an app account" do
+  describe "user app account update" do
+    setup [:create_user_app_account]
     @tag :integration
-    test "should not allow organization account to be tagged as contributor" do
-      assert {:ok, %AppAccount{} = org_account} =
-               AppAccounts.register_app_account(%{
-                                                  is_org: true,
-                                                  handle_name: "meow_org",
-                                                  billing_email: "meow@meow.org",
-                                                })
-      assert {:error,
-                %{app_account: ["organization cannot be a contributor"]}} =
-               AppAccounts.update_app_account(org_account,
-                                              %{is_contributor: true})
-    end
-    @tag :integration
-    test "should not allow organization account to be tagged as employee" do
-      assert {:ok, %AppAccount{} = org_account} =
-               AppAccounts.register_app_account(%{
-                                                  is_org: true,
-                                                  handle_name: "meow_org",
-                                                  billing_email: "meow@meow.org",
-                                                })
-      assert {:error, %{app_account: ["organization cannot be an employee"]}} =
-               AppAccounts.update_app_account(org_account, %{is_employee: true})
-    end
-    @tag :integration
-    test "should not allow user account to have billing email" do
-      assert {:ok, %AppAccount{} = user_account} =
-               AppAccounts.register_app_account(%{
-                                                  is_org: false,
-                                                  handle_name: "meow",
-                                                  primary_email: "meow@gmail.org",
-                                                })
+    test "should not allow user account to have billing email",
+         %{user_app_account: user_app_account} do
       assert {:error,
                 %{app_account: ["user account does not have billing email"]}} =
-               AppAccounts.update_app_account(user_account,
+               AppAccounts.update_app_account(user_app_account,
                                               %{
                                                 new_billing_email: "fake@gmail.org",
                                               })
     end
     @tag :integration
-    test "should not allow organization account to have primary email" do
-      assert {:ok, %AppAccount{} = org_account} =
-               AppAccounts.register_app_account(%{
-                                                  is_org: true,
-                                                  handle_name: "meow_org",
-                                                  billing_email: "meow@meow.org",
-                                                })
+    test "should set primary email verification to false when primary email is updated",
+         %{user_app_account: user_app_account} do
+      assert {:ok, updated_user_app_account} =
+               AppAccounts.update_app_account(user_app_account,
+                                              %{primary_email: "new@gmail.com"})
+      email =
+        Enum.find(updated_user_app_account.emails,
+                  fn email ->
+                    email.address == "new@gmail.com" and email.type == 0
+                  end)
+      assert email.is_verified == false
+    end
+    @tag :integration
+    test "should set contributor status to true when account is contributor",
+         %{user_app_account: user_app_account} do
+      assert {:ok, updated_user_app_account} =
+               AppAccounts.update_app_account(user_app_account,
+                                              %{is_contributor: true})
+      assert updated_user_app_account.is_contributor == true
+    end
+    @tag :integration
+    test "should set employee status to true when account is employee",
+         %{user_app_account: user_app_account} do
+      assert {:ok, updated_user_app_account} =
+               AppAccounts.update_app_account(user_app_account,
+                                              %{is_employee: true})
+      assert updated_user_app_account.is_employee == true
+    end
+    @tag :integration
+    test "should set activation status to true when account is deactivated",
+         %{user_app_account: user_app_account} do
+      assert {:ok, updated_user_app_account} =
+               AppAccounts.update_app_account(user_app_account,
+                                              %{is_activated: false})
+      assert updated_user_app_account.is_activated == false
+    end
+    @tag :integration
+    test "should set suspension status to true when account is suspended",
+         %{user_app_account: user_app_account} do
+      assert {:ok, updated_user_app_account} =
+               AppAccounts.update_app_account(user_app_account,
+                                              %{is_suspended: true})
+      assert updated_user_app_account.is_suspended == true
+    end
+    @tag :integration
+    test "should update handle name when handle name is available",
+         %{user_app_account: user_app_account} do
+      assert {:ok, updated_user_app_account} =
+               AppAccounts.update_app_account(user_app_account,
+                                              %{handle_name: "meow2"})
+      assert updated_user_app_account.handle_name == "meow2"
+    end
+    @tag :integration
+    test "should update primary email verification to true when correct verification is given",
+         %{user_app_account: user_app_account} do
+      assert {:ok, updated_user_app_account} =
+               AppAccounts.update_app_account(user_app_account,
+                                              %{primary_email_verification_code: "meow_email_code"})
+                                              email =
+      Enum.find(updated_user_app_account.emails,
+                fn email ->
+                  email.address == "meow@gmail.com" and email.type == 0
+                end)
+      assert email.is_verified == true
+    end
+  end
+  describe "organization app account update" do
+    setup [:create_org_app_account]
+    @tag :integration
+    test "should not allow organization account to have primary email",
+         %{org_app_account: org_app_account} do
       assert {:error,
                 %{
                   app_account: [
                     "organization account does not have primary email",
                   ],
                 }} =
-               AppAccounts.update_app_account(org_account,
+               AppAccounts.update_app_account(org_app_account,
                                               %{primary_email: "woof@woof.org"})
+    end
+    @tag :integration
+    test "should not allow organization account to be tagged as contributor",
+         %{org_app_account: org_app_account} do
+      assert {:error,
+                %{app_account: ["organization cannot be a contributor"]}} =
+               AppAccounts.update_app_account(org_app_account,
+                                              %{is_contributor: true})
+    end
+    @tag :integration
+    test "should not allow organization account to be tagged as employee",
+         %{org_app_account: org_app_account} do
+      assert {:error, %{app_account: ["organization cannot be an employee"]}} =
+               AppAccounts.update_app_account(org_app_account,
+                                              %{is_employee: true})
     end
   end
 end

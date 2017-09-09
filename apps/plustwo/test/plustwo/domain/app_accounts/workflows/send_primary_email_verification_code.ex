@@ -8,18 +8,13 @@ defmodule Plustwo.Domain.AppAccounts.Workflows.SendPrimaryEmailVerificationCodeT
   alias Plustwo.Infrastructure.Components.EmailVerification
 
   describe "an email verification code" do
+    setup [:create_user_app_account]
     @tag :integration
-    test "should be created when a new user account is registered" do
-      assert {:ok, %AppAccount{} = app_account} =
-               AppAccounts.register_app_account(%{
-                                                  is_org: false,
-                                                  handle_name: "meow",
-                                                  email: "meow@gmail.com",
-                                                })
-      :timer.sleep :timer.seconds(5)
+    test "should be created when a new user account is registered", %{user_app_account: user_app_account} do
+      :timer.sleep :timer.seconds(3)
       email_verification_code_hash =
         EmailVerification.get_code_hash(%{
-                                          app_account_uuid: app_account.uuid,
+                                          app_account_uuid: user_app_account.uuid,
                                           email_type: 0,
                                         })
       assert email_verification_code_hash != nil

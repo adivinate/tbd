@@ -18,26 +18,17 @@ defmodule Plustwo.Domain.AppAccounts.Projectors.AppAccount do
                                            AppAccountMarkedAsNonContributor,
                                            AppAccountMarkedAsNonEmployee,
                                            AppAccountPrimaryEmailUpdated,
-                                           #AppAccountPrimaryEmailVerified,
+                                           AppAccountPrimaryEmailVerified,
                                            AppAccountRegistered,
                                            AppAccountSuspended,
                                            AppAccountSuspensionLifted}
 
-  project %AppAccountActivated{app_account_uuid: app_account_uuid,
-                               is_activated: is_activated},
-          metadata do
-    update_app_account multi,
-                       app_account_uuid,
-                       metadata,
-                       is_activated: is_activated
+  project %AppAccountActivated{app_account_uuid: app_account_uuid}, metadata do
+    update_app_account multi, app_account_uuid, metadata, is_activated: true
   end
-  project %AppAccountDeactivated{app_account_uuid: app_account_uuid,
-                                 is_activated: is_activated},
+  project %AppAccountDeactivated{app_account_uuid: app_account_uuid},
           metadata do
-    update_app_account multi,
-                       app_account_uuid,
-                       metadata,
-                       is_activated: is_activated
+    update_app_account multi, app_account_uuid, metadata, is_activated: false
   end
   project %AppAccountHandleNameChanged{} = changed, metadata do
     update_app_account multi,
@@ -45,45 +36,38 @@ defmodule Plustwo.Domain.AppAccounts.Projectors.AppAccount do
                        metadata,
                        handle_name: changed.handle_name
   end
-  project %AppAccountMarkedAsContributor{app_account_uuid: app_account_uuid,
-                                         is_contributor: is_contributor},
+  project %AppAccountMarkedAsContributor{app_account_uuid: app_account_uuid},
           metadata do
-    update_app_account multi,
-                       app_account_uuid,
-                       metadata,
-                       is_contributor: is_contributor
+    update_app_account multi, app_account_uuid, metadata, is_contributor: true
   end
-  project %AppAccountMarkedAsEmployee{app_account_uuid: app_account_uuid,
-                                      is_employee: is_employee},
+  project %AppAccountMarkedAsEmployee{app_account_uuid: app_account_uuid},
           metadata do
-    update_app_account multi,
-                       app_account_uuid,
-                       metadata,
-                       is_employee: is_employee
+    update_app_account multi, app_account_uuid, metadata, is_employee: true
   end
-  project %AppAccountMarkedAsNonContributor{app_account_uuid: app_account_uuid,
-                                            is_contributor: is_contributor},
+  project %AppAccountMarkedAsNonContributor{app_account_uuid: app_account_uuid},
           metadata do
-    update_app_account multi,
-                       app_account_uuid,
-                       metadata,
-                       is_contributor: is_contributor
+    update_app_account multi, app_account_uuid, metadata, is_contributor: false
   end
-  project %AppAccountMarkedAsNonEmployee{app_account_uuid: app_account_uuid,
-                                         is_employee: is_employee},
+  project %AppAccountMarkedAsNonEmployee{app_account_uuid: app_account_uuid},
           metadata do
-    update_app_account multi,
-                       app_account_uuid,
-                       metadata,
-                       is_employee: is_employee
+    update_app_account multi, app_account_uuid, metadata, is_employee: false
   end
-  project %AppAccountPrimaryEmailUpdated{} = updated, metadata do
+  project %AppAccountPrimaryEmailUpdated{app_account_uuid: app_account_uuid,
+                                         email_address: email_address},
+          metadata do
     update_app_account_email multi,
-                             updated.app_account_uuid,
+                             app_account_uuid,
                              0,
                              metadata,
-                             address: updated.primary_email,
-                             is_verified: updated.is_primary_email_verified
+                             address: email_address, is_verified: false
+  end
+  project %AppAccountPrimaryEmailVerified{app_account_uuid: app_account_uuid},
+          metadata do
+    update_app_account_email multi,
+                             app_account_uuid,
+                             0,
+                             metadata,
+                             is_verified: true
   end
   project %AppAccountRegistered{} = registered, %{stream_version: version} do
     multi
@@ -103,21 +87,12 @@ defmodule Plustwo.Domain.AppAccounts.Projectors.AppAccount do
                                      type: registered.email_type,
                                      is_verified: registered.is_email_verified})
   end
-  project %AppAccountSuspended{app_account_uuid: app_account_uuid,
-                               is_suspended: is_suspended},
-          metadata do
-    update_app_account multi,
-                       app_account_uuid,
-                       metadata,
-                       is_suspended: is_suspended
+  project %AppAccountSuspended{app_account_uuid: app_account_uuid}, metadata do
+    update_app_account multi, app_account_uuid, metadata, is_suspended: true
   end
-  project %AppAccountSuspensionLifted{app_account_uuid: app_account_uuid,
-                                      is_suspended: is_suspended},
+  project %AppAccountSuspensionLifted{app_account_uuid: app_account_uuid},
           metadata do
-    update_app_account multi,
-                       app_account_uuid,
-                       metadata,
-                       is_suspended: is_suspended
+    update_app_account multi, app_account_uuid, metadata, is_suspended: false
   end
   def after_update(_event, _metadata, changes) do
     Notifications.publish_changes changes
