@@ -13,11 +13,19 @@ defmodule Plustwo.Domain.AppAccounts.Supervisor do
   def init(_) do
     children = [
       supervisor(Registry, [:duplicate, Plustwo.Domain.AppAccounts]),
-      # Read model projections
       worker(AppAccounts.Projectors.AppAccount,
              [],
              id: :app_accounts_app_account_projector),
-      # Workflows
+      worker(AppAccounts.Projectors.Business,
+             [],
+             id: :app_accounts_business_projector),
+      worker(AppAccounts.Projectors.User, [], id: :app_accounts_user_projector),
+      worker(AppAccounts.Workflows.CreateBusinessFromAppAccount,
+             [],
+             id: :create_business_from_app_account),
+      worker(AppAccounts.Workflows.CreateUserFromAppAccount,
+             [],
+             id: :create_user_from_app_account),
       worker(AppAccounts.Workflows.SendPrimaryEmailVerificationCode,
              [],
              id: :send_primary_email_verification_code_workflow),

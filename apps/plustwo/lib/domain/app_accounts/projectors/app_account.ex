@@ -13,10 +13,6 @@ defmodule Plustwo.Domain.AppAccounts.Projectors.AppAccount do
                                            #AppAccountBillingEmailRemoved,
                                            AppAccountDeactivated,
                                            AppAccountHandleNameChanged,
-                                           AppAccountMarkedAsContributor,
-                                           AppAccountMarkedAsEmployee,
-                                           AppAccountMarkedAsNonContributor,
-                                           AppAccountMarkedAsNonEmployee,
                                            AppAccountPrimaryEmailUpdated,
                                            AppAccountPrimaryEmailVerified,
                                            AppAccountRegistered,
@@ -36,22 +32,6 @@ defmodule Plustwo.Domain.AppAccounts.Projectors.AppAccount do
                        metadata,
                        handle_name: changed.handle_name
   end
-  project %AppAccountMarkedAsContributor{app_account_uuid: app_account_uuid},
-          metadata do
-    update_app_account multi, app_account_uuid, metadata, is_contributor: true
-  end
-  project %AppAccountMarkedAsEmployee{app_account_uuid: app_account_uuid},
-          metadata do
-    update_app_account multi, app_account_uuid, metadata, is_employee: true
-  end
-  project %AppAccountMarkedAsNonContributor{app_account_uuid: app_account_uuid},
-          metadata do
-    update_app_account multi, app_account_uuid, metadata, is_contributor: false
-  end
-  project %AppAccountMarkedAsNonEmployee{app_account_uuid: app_account_uuid},
-          metadata do
-    update_app_account multi, app_account_uuid, metadata, is_employee: false
-  end
   project %AppAccountPrimaryEmailUpdated{app_account_uuid: app_account_uuid,
                                          email_address: email_address},
           metadata do
@@ -69,23 +49,29 @@ defmodule Plustwo.Domain.AppAccounts.Projectors.AppAccount do
                              metadata,
                              is_verified: true
   end
-  project %AppAccountRegistered{} = registered, %{stream_version: version} do
+  project %AppAccountRegistered{app_account_uuid: app_account_uuid,
+                                type: type,
+                                is_activated: is_activated,
+                                is_suspended: is_suspended,
+                                handle_name: handle_name,
+                                email_address: email_address,
+                                email_type: email_type,
+                                joined_at: joined_at},
+          %{stream_version: version} do
     multi
     |> Multi.insert(:app_account,
-                    %AppAccount{uuid: registered.app_account_uuid,
+                    %AppAccount{uuid: app_account_uuid,
                                 version: version,
-                                is_activated: registered.is_activated,
-                                is_suspended: registered.is_suspended,
-                                is_employee: registered.is_employee,
-                                is_contributor: registered.is_contributor,
-                                is_org: registered.is_org,
-                                handle_name: registered.handle_name})
+                                type: type,
+                                is_activated: is_activated,
+                                is_suspended: is_suspended,
+                                handle_name: handle_name})
     |> Multi.insert(:app_account_email,
                     %AppAccountEmail{version: version,
-                                     app_account_uuid: registered.app_account_uuid,
-                                     address: registered.email,
-                                     type: registered.email_type,
-                                     is_verified: registered.is_email_verified})
+                                     app_account_uuid: app_account_uuid,
+                                     address: email_address,
+                                     type: email_type,
+                                     is_verified: false})
   end
   project %AppAccountSuspended{app_account_uuid: app_account_uuid}, metadata do
     update_app_account multi, app_account_uuid, metadata, is_suspended: true

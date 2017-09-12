@@ -4,15 +4,12 @@ defmodule Plustwo.Domain.AppAccounts.Events.AppAccountRegistered do
   @derive [Poison.Encoder]
   defstruct [
               :app_account_uuid,
+              :type,
               :is_activated,
               :is_suspended,
-              :is_employee,
-              :is_contributor,
-              :is_org,
               :handle_name,
-              :email,
+              :email_address,
               :email_type,
-              :is_email_verified,
               :joined_at,
             ]
 end

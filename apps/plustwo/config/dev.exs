@@ -13,7 +13,10 @@ config :phoenix, :stacktrace_depth, 20
 
 config :plustwo, Plustwo.Infrastructure.Repo.Postgres,
   adapter: Ecto.Adapters.Postgres,
+  username: "postgres",
+  password: "postgres",
   database: "plustwo_dev",
+  hostname: "localhost",
   pool_size: 10
 
 config :eventstore, EventStore.Storage,

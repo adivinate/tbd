@@ -8,14 +8,10 @@ defmodule Plustwo.Domain.AppAccounts.Workflows.SendPrimaryEmailVerificationCode 
   alias Plustwo.Domain.AppAccounts.Events.AppAccountRegistered
 
   def handle(%AppAccountRegistered{app_account_uuid: app_account_uuid,
-                                   email: email,
-                                   is_org: false},
+                                   email_address: email_address,
+                                   type: 0},
              _metadata) do
-    verification_code = if Mix.env() == :dev or Mix.env() == :test do
-        "meow_email_code"
-      else
-        UUID.uuid4 :hex
-      end
+    verification_code = generate_verification_code()
     case EmailVerification.set_code(%{
                                       app_account_uuid: app_account_uuid,
                                       email_type: 0,
@@ -26,6 +22,15 @@ defmodule Plustwo.Domain.AppAccounts.Workflows.SendPrimaryEmailVerificationCode 
 
       _ ->
         {:error, "unable to send primary email verification code"}
+    end
+  end
+
+
+  defp generate_verification_code do
+    if Mix.env() == :dev or Mix.env() == :test do
+      "email_code"
+    else
+      UUID.uuid4 :hex
     end
   end
 end

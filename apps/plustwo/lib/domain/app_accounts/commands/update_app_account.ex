@@ -1,11 +1,9 @@
 defmodule Plustwo.Domain.AppAccounts.Commands.UpdateAppAccount do
   @moduledoc false
 
-  defstruct app_account_uuid: "",
+  defstruct app_account_uuid: nil,
             is_activated: nil,
             is_suspended: nil,
-            is_employee: nil,
-            is_contributor: nil,
             handle_name: nil,
             primary_email: nil,
             primary_email_verification_code: nil,
@@ -28,8 +26,6 @@ defmodule Plustwo.Domain.AppAccounts.Commands.UpdateAppAccount do
             ]
   validates :is_activated, boolean: true
   validates :is_suspended, boolean: true
-  validates :is_employee, boolean: true
-  validates :is_contributor, boolean: true
   validates :handle_name,
             string: true,
             handle_name: true,

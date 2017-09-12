@@ -2,11 +2,9 @@ defmodule Plustwo.Domain.AppAccounts.Aggregates.AppAccount do
   @moduledoc false
 
   defstruct app_account_uuid: nil,
+            type: nil,
             is_activated: nil,
             is_suspended: nil,
-            is_employee: nil,
-            is_contributor: nil,
-            is_org: nil,
             handle_name: nil,
             emails: MapSet.new(),
             joined_at: nil
@@ -16,10 +14,6 @@ defmodule Plustwo.Domain.AppAccounts.Aggregates.AppAccount do
                                            AppAccountBillingEmailRemoved,
                                            AppAccountDeactivated,
                                            AppAccountHandleNameChanged,
-                                           AppAccountMarkedAsContributor,
-                                           AppAccountMarkedAsEmployee,
-                                           AppAccountMarkedAsNonContributor,
-                                           AppAccountMarkedAsNonEmployee,
                                            AppAccountPrimaryEmailUpdated,
                                            AppAccountPrimaryEmailVerified,
                                            AppAccountRegistered,
@@ -30,23 +24,23 @@ defmodule Plustwo.Domain.AppAccounts.Aggregates.AppAccount do
     %AppAccount{app_account | is_activated: true}
   end
 
-  def apply(%AppAccount{} = app_account,
-            %AppAccountBillingEmailAdded{} = added) do
+
+  def akpply(%AppAccount{emails: emails} = app_account,
+             %AppAccountBillingEmailAdded{email_address: email_address}) do
     %AppAccount{app_account |
-                emails: MapSet.put(app_account.emails,
-                                   %{address: added.email_address, type: 1})}
+                emails: MapSet.put(emails, %{address: email_address, type: 1})}
   end
 
+
   def apply(%AppAccount{emails: emails} = app_account,
-            %AppAccountBillingEmailRemoved{} = removed) do
+            %AppAccountBillingEmailRemoved{email_address: email_address}) do
     current_billing_email =
       Enum.find(emails,
                 fn email ->
-                  email.type == 1 and email.address == removed.email_address
+                  email.type == 1 and email.address == email_address
                 end)
     %AppAccount{app_account |
-                emails: MapSet.delete(app_account.emails,
-                                      current_billing_email)}
+                emails: MapSet.delete(emails, current_billing_email)}
   end
 
   def apply(%AppAccount{} = app_account, %AppAccountDeactivated{}) do
@@ -58,30 +52,14 @@ defmodule Plustwo.Domain.AppAccounts.Aggregates.AppAccount do
     %AppAccount{app_account | handle_name: handle_name}
   end
 
-  def apply(%AppAccount{} = app_account, %AppAccountMarkedAsContributor{}) do
-    %AppAccount{app_account | is_contributor: true}
-  end
-
-  def apply(%AppAccount{} = app_account, %AppAccountMarkedAsEmployee{}) do
-    %AppAccount{app_account | is_employee: true}
-  end
-
-  def apply(%AppAccount{} = app_account, %AppAccountMarkedAsNonContributor{}) do
-    %AppAccount{app_account | is_contributor: false}
-  end
-
-  def apply(%AppAccount{} = app_account, %AppAccountMarkedAsNonEmployee{}) do
-    %AppAccount{app_account | is_employee: false}
-  end
-
   def apply(%AppAccount{emails: emails} = app_account,
-            %AppAccountPrimaryEmailUpdated{} = updated) do
+            %AppAccountPrimaryEmailUpdated{email_address: email_address}) do
     %AppAccount{app_account | emails: MapSet.new(emails, fn
                                                    %{type: 0} =
                                                         current_primary_email ->
                                                      %{
                                                        current_primary_email |
-                                                       address: updated.email_address,
+                                                       address: email_address,
                                                        is_verified: false,
                                                      }
 
@@ -106,21 +84,27 @@ defmodule Plustwo.Domain.AppAccounts.Aggregates.AppAccount do
   end
 
   def apply(%AppAccount{} = app_account,
-            %AppAccountRegistered{} = registered) do
+            %AppAccountRegistered{app_account_uuid: app_account_uuid,
+                                  type: type,
+                                  is_activated: is_activated,
+                                  is_suspended: is_suspended,
+                                  handle_name: handle_name,
+                                  email_address: email_address,
+                                  email_type: email_type,
+                                  joined_at: joined_at}) do
     %AppAccount{app_account |
-                app_account_uuid: registered.app_account_uuid,
-                is_activated: registered.is_activated,
-                is_suspended: registered.is_suspended,
-                is_employee: registered.is_employee,
-                is_contributor: registered.is_contributor,
-                is_org: registered.is_org,
-                handle_name: registered.handle_name,
+                app_account_uuid: app_account_uuid,
+                type: type,
+                is_activated: is_activated,
+                is_suspended: is_suspended,
+                handle_name: handle_name,
                 emails: MapSet.put(app_account.emails,
                                    %{
-                                     address: registered.email,
-                                     type: registered.email_type,
-                                     is_verified: registered.is_email_verified,
-                                   })}
+                                     address: email_address,
+                                     type: email_type,
+                                     is_verified: false,
+                                   }),
+                joined_at: joined_at}
   end
 
   def apply(%AppAccount{} = app_account, %AppAccountSuspended{}) do

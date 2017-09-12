@@ -3,15 +3,12 @@ defmodule Plustwo.Factory do
 
   use ExMachina
 
-  alias Plustwo.Domain.AppAccounts.Commands.{RegisterAppAccount,
-                                             UpdateAppAccount}
-
   def user_app_account_factory do
-    %{is_org: false, handle_name: "meow", primary_email: "meow@gmail.com"}
+    %{type: 0, handle_name: "meow", primary_email: "meow@gmail.com"}
   end
 
 
-  def org_app_account_factory do
-    %{is_org: true, handle_name: "meow_org", billing_email: "meow@meow.org"}
+  def business_app_account_factory do
+    %{type: 1, handle_name: "meow_biz", billing_email: "meow@meow.biz"}
   end
 end

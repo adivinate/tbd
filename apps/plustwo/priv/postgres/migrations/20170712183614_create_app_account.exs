@@ -7,11 +7,9 @@ defmodule Plustwo.Infrastructure.Repo.Postgres.Migrations.CreateAppAccount do
     create table(:app_account, primary_key: false) do
       add :uuid, :uuid, primary_key: true
       add :version, :integer, default: 0
+      add :type, :integer
       add :is_activated, :boolean
       add :is_suspended, :boolean
-      add :is_employee, :boolean
-      add :is_contributor, :boolean
-      add :is_org, :boolean
       add :handle_name, :string
       add :joined_at, :utc_datetime
     end

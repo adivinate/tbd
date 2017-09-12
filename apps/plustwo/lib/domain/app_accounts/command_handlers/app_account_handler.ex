@@ -11,10 +11,6 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
                                            AppAccountBillingEmailRemoved,
                                            AppAccountDeactivated,
                                            AppAccountHandleNameChanged,
-                                           AppAccountMarkedAsContributor,
-                                           AppAccountMarkedAsEmployee,
-                                           AppAccountMarkedAsNonContributor,
-                                           AppAccountMarkedAsNonEmployee,
                                            AppAccountPrimaryEmailUpdated,
                                            AppAccountPrimaryEmailVerified,
                                            AppAccountRegistered,
@@ -23,32 +19,28 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
 
   @doc "Register an app account for user."
   def handle(%AppAccount{app_account_uuid: nil},
-             %RegisterAppAccount{is_org: false} = register) do
+             %RegisterAppAccount{type: 0} = register) do
     %AppAccountRegistered{app_account_uuid: register.app_account_uuid,
+                          type: 0,
                           is_activated: true,
                           is_suspended: false,
-                          is_employee: false,
-                          is_contributor: false,
-                          is_org: false,
                           handle_name: register.handle_name,
-                          email: register.primary_email,
+                          email_address: register.primary_email,
                           email_type: 0,
-                          is_email_verified: false}
+                          joined_at: Calendar.DateTime.now_utc()}
   end
 
-  @doc "Register an app account for organization."
+  @doc "Register an app account for business."
   def handle(%AppAccount{app_account_uuid: nil},
-             %RegisterAppAccount{is_org: true} = register) do
+             %RegisterAppAccount{type: 1} = register) do
     %AppAccountRegistered{app_account_uuid: register.app_account_uuid,
+                          type: 1,
                           is_activated: false,
                           is_suspended: false,
-                          is_employee: false,
-                          is_contributor: false,
-                          is_org: true,
                           handle_name: register.handle_name,
-                          email: register.billing_email,
+                          email_address: register.billing_email,
                           email_type: 1,
-                          is_email_verified: false}
+                          joined_at: Calendar.DateTime.now_utc()}
   end
 
   @doc "Update an app account handle name, email, phone, etc.."
@@ -57,8 +49,6 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
       &handle_name_changed/2,
       &activation_status_updated/2,
       &suspension_status_updated/2,
-      &employee_status_updated/2,
-      &contributor_status_updated/2,
       &primary_email_updated/2,
       &primary_email_verified/2,
       &billing_email_added/2,
@@ -154,68 +144,6 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
   end
 
 
-  defp employee_status_updated(%AppAccount{},
-                               %UpdateAppAccount{is_employee: nil}) do
-    nil
-  end
-
-  defp employee_status_updated(%AppAccount{},
-                               %UpdateAppAccount{is_employee: ""}) do
-    nil
-  end
-
-  defp employee_status_updated(%AppAccount{is_org: true},
-                               %UpdateAppAccount{is_employee: _}) do
-    {:error, %{app_account: ["organization cannot be an employee"]}}
-  end
-
-  defp employee_status_updated(%AppAccount{is_employee: is_employee},
-                               %UpdateAppAccount{is_employee: is_employee}) do
-    nil
-  end
-
-  defp employee_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
-                               %UpdateAppAccount{is_employee: true}) do
-    %AppAccountMarkedAsEmployee{app_account_uuid: app_account_uuid}
-  end
-
-  defp employee_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
-                               %UpdateAppAccount{is_employee: false}) do
-    %AppAccountMarkedAsNonEmployee{app_account_uuid: app_account_uuid}
-  end
-
-
-  defp contributor_status_updated(%AppAccount{},
-                                  %UpdateAppAccount{is_contributor: nil}) do
-    nil
-  end
-
-  defp contributor_status_updated(%AppAccount{},
-                                  %UpdateAppAccount{is_contributor: ""}) do
-    nil
-  end
-
-  defp contributor_status_updated(%AppAccount{is_org: true},
-                                  %UpdateAppAccount{is_contributor: _}) do
-    {:error, %{app_account: ["organization cannot be a contributor"]}}
-  end
-
-  defp contributor_status_updated(%AppAccount{is_contributor: is_contributor},
-                                  %UpdateAppAccount{is_contributor: is_contributor}) do
-    nil
-  end
-
-  defp contributor_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
-                                  %UpdateAppAccount{is_contributor: true}) do
-    %AppAccountMarkedAsContributor{app_account_uuid: app_account_uuid}
-  end
-
-  defp contributor_status_updated(%AppAccount{app_account_uuid: app_account_uuid},
-                                  %UpdateAppAccount{is_contributor: false}) do
-    %AppAccountMarkedAsNonContributor{app_account_uuid: app_account_uuid}
-  end
-
-
   defp primary_email_updated(%AppAccount{},
                              %UpdateAppAccount{primary_email: nil}) do
     nil
@@ -226,10 +154,9 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
     nil
   end
 
-  defp primary_email_updated(%AppAccount{is_org: true},
+  defp primary_email_updated(%AppAccount{type: 1},
                              %UpdateAppAccount{primary_email: _}) do
-    {:error,
-     %{app_account: ["organization account does not have primary email"]}}
+    {:error, %{app_account: ["business app account cannot have primary email"]}}
   end
 
   defp primary_email_updated(%AppAccount{app_account_uuid: app_account_uuid},
@@ -249,10 +176,10 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
     nil
   end
 
-  defp primary_email_verified(%AppAccount{is_org: true},
+  defp primary_email_verified(%AppAccount{type: 1},
                               %UpdateAppAccount{primary_email_verification_code: _}) do
     {:error,
-     %{app_account: ["organization account does not have primary email"]}}
+     %{app_account: ["organization app account cannot have primary email"]}}
   end
 
   defp primary_email_verified(%AppAccount{app_account_uuid: app_account_uuid},
@@ -286,9 +213,9 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
     nil
   end
 
-  defp billing_email_added(%AppAccount{is_org: false},
+  defp billing_email_added(%AppAccount{type: 0},
                            %UpdateAppAccount{new_billing_email: _}) do
-    {:error, %{app_account: ["user account does not have billing email"]}}
+    {:error, %{app_account: ["user app account cannot have billing email"]}}
   end
 
   defp billing_email_added(%AppAccount{app_account_uuid: app_account_uuid},
@@ -308,9 +235,9 @@ defmodule Plustwo.Domain.AppAccounts.CommandHandlers.AppAccountHandler do
     nil
   end
 
-  defp billing_email_removed(%AppAccount{is_org: false},
+  defp billing_email_removed(%AppAccount{type: 0},
                              %UpdateAppAccount{remove_billing_email: _}) do
-    {:error, %{app_account: ["user account does not have billing email"]}}
+    {:error, %{app_account: ["user app account cannot have billing email"]}}
   end
 
   defp billing_email_removed(%AppAccount{app_account_uuid: app_account_uuid},

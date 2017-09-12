@@ -34,10 +34,9 @@ defmodule Plustwo.Storage do
     TRUNCATE TABLE
       app_account,
       app_account_email,
-      app_org,
-      app_org_member,
-      app_user,
+      business,
       email_verification,
+      plustwo_user,
       world_country,
       world_currency,
       world_locale,

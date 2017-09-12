@@ -1,12 +1,11 @@
 defmodule Plustwo.Domain.AppAccounts.Commands.RegisterAppAccount do
   @moduledoc false
 
-  defstruct app_account_uuid: "",
-            is_org: false,
-            handle_name: "",
-            org_owner_app_account_uuid: "",
-            primary_email: "",
-            billing_email: ""
+  defstruct app_account_uuid: nil,
+            type: nil,
+            handle_name: nil,
+            primary_email: nil,
+            billing_email: nil
   use Plustwo.Domain, :command
 
   alias Plustwo.Domain.AppAccounts.Commands.RegisterAppAccount
@@ -14,7 +13,10 @@ defmodule Plustwo.Domain.AppAccounts.Commands.RegisterAppAccount do
                                                UniqueAppAccountPrimaryEmail}
 
   validates :app_account_uuid, presence: true, uuid: true
-  validates :is_org, boolean: true
+  validates :type,
+            presence: true,
+            integer: true,
+            inclusion: [in: 0..1, allow_nil: false, allow_blank: false]
   validates :handle_name,
             presence: true,
             string: true,
@@ -26,7 +28,7 @@ defmodule Plustwo.Domain.AppAccounts.Commands.RegisterAppAccount do
               allow_nil: false,
             ]
   validates :primary_email,
-            presence: [if: [is_org: false]],
+            presence: [if: [type: 0]],
             string: true,
             email: true,
             by: [
@@ -34,11 +36,11 @@ defmodule Plustwo.Domain.AppAccounts.Commands.RegisterAppAccount do
               allow_blank: false,
               allow_nil: false,
             ]
-  validates :billing_email,
-            presence: [if: [is_org: true]], string: true, email: true
+  validates :billing_email, presence: [if: [type: 1]], string: true, email: true
 
   @doc "Assigns UUID to app account."
-  def assign_app_account_uuid(%RegisterAppAccount{} = app_account, app_account_uuid) do
+  def assign_app_account_uuid(%RegisterAppAccount{} = app_account,
+                              app_account_uuid) do
     %RegisterAppAccount{app_account | app_account_uuid: app_account_uuid}
   end
 
@@ -51,11 +53,6 @@ defmodule Plustwo.Domain.AppAccounts.Commands.RegisterAppAccount do
 
 
   @doc "Downcases app account primary email."
-  def downcase_primary_email(%RegisterAppAccount{primary_email: nil} =
-                               app_account) do
-    app_account
-  end
-
   def downcase_primary_email(%RegisterAppAccount{primary_email: primary_email} =
                                app_account) do
     %RegisterAppAccount{app_account |
@@ -64,11 +61,6 @@ defmodule Plustwo.Domain.AppAccounts.Commands.RegisterAppAccount do
 
 
   @doc "Downcases app account billing email."
-  def downcase_billing_email(%RegisterAppAccount{billing_email: nil} =
-                               app_account) do
-    app_account
-  end
-
   def downcase_billing_email(%RegisterAppAccount{billing_email: billing_email} =
                                app_account) do
     %RegisterAppAccount{app_account |

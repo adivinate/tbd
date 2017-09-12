@@ -14,7 +14,10 @@ config :plustwo, Plustwo.Infrastructure.Mailer,
 
 config :plustwo, Plustwo.Infrastructure.Repo.Postgres,
   adapter: Ecto.Adapters.Postgres,
+  username: "postgres",
+  password: "postgres",
   database: "plustwo_test",
+  hostname: "localhost",
   pool_size: 1
 
 config :eventstore, EventStore.Storage,
